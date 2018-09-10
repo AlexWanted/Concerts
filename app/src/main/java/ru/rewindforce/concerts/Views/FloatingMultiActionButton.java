@@ -1,32 +1,21 @@
 package ru.rewindforce.concerts.Views;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.Shader;
-import android.graphics.Xfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.Shape;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+
 
 import java.util.ArrayList;
 
@@ -35,14 +24,25 @@ import ru.rewindforce.concerts.R;
 public class FloatingMultiActionButton extends View {
 
     private static final String TAG = FloatingMultiActionButton.class.getSimpleName();
+    private static final long EXPAND_ANIM_DURATION = 100;
 
     public static final int SIZE_NOT_SPECIFIED = -1;
+
+
 
     private Context mContext;
     ArrayList<Item> items;
     private float mButtonSize;
     private float mSecButtonsSize;
+    private String mPrompt;
+    private OnItemClickListener onItemClickListener;
+
+    private float expandAnimatedValue = 0f;
+
     private Rect mViewBounds;
+    private Rect mMainButtonBounds;
+    private boolean isExpanded;
+    private boolean isAnimating;
 
     /*private int mButtonColor;
     private int mButtonColorRes;*/
@@ -64,12 +64,18 @@ public class FloatingMultiActionButton extends View {
         items = new ArrayList<>();
 
         mViewBounds = new Rect();
+        mMainButtonBounds = new Rect();
 
         mButtonPaint = new Paint();
         mButtonPaint.setColor(Color.BLACK);
         mButtonPaint.setStyle(Paint.Style.FILL);
         mButtonPaint.setAntiAlias(true);
-        mButtonPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+
+
+        addItem(new Item(0).setName("Иду"));
+        addItem(new Item(2).setName("Не иду"));
+        addItem(new Item(1).setName("Хочу пойти"));
+        addItem(new Item(4).setName("Возможно иду"));
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingMultiActionButton, defStyleAttr, 0);
@@ -85,15 +91,88 @@ public class FloatingMultiActionButton extends View {
             a.recycle();
         }
 
-        if (mButtonBackground == null){
-            ShapeDrawable shape = new ShapeDrawable();
-            shape.setShape(new Shape() {
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.getClipBounds(mViewBounds);
+        mViewBounds.left += getPaddingLeft();
+        mViewBounds.top += getPaddingTop();
+        mViewBounds.right -= getPaddingRight();
+        mViewBounds.bottom -= getPaddingBottom();
+
+        mMainButtonBounds.left = (int) (mViewBounds.centerX()-mButtonSize/2);
+        mMainButtonBounds.top = (int) (mViewBounds.centerY()+(getItemCount()*mButtonSize)/2-mButtonSize/2);
+        mMainButtonBounds.right = (int) (mViewBounds.centerX()+mButtonSize/2);
+        mMainButtonBounds.bottom = (int) (mMainButtonBounds.top+ mButtonSize);
+
+        mButtonBackground.setBounds(mMainButtonBounds);
+
+        if (isAnimating || isExpanded) {
+            for (int i = 0; i < items.size(); i++) {
+                int itemPadding = (int) (mButtonSize - mSecButtonsSize);
+                int centerX = mMainButtonBounds.centerX();
+                int centerY = (int) (mMainButtonBounds.centerY() - ((mButtonSize * (i + 1)) + itemPadding / 2) * expandAnimatedValue);
+                items.get(i).setBounds(
+                        (int) (centerX - mSecButtonsSize / 2),
+                        (int) (centerY - mSecButtonsSize / 2),
+                        (int) (centerX + mSecButtonsSize / 2),
+                        (int) (centerY + mSecButtonsSize / 2));
+
+                if (mButtonBackground instanceof ColorDrawable) {
+                    canvas.drawCircle(
+                            items.get(i).getBounds().centerX(),
+                            items.get(i).getBounds().centerY(),
+                            mSecButtonsSize / 2,
+                            mButtonPaint);
+                } else {
+                    mButtonBackground.setBounds(items.get(i).getBounds());
+                    mButtonBackground.draw(canvas);
+                }
+            }
+        }
+        if (mButtonBackground instanceof ColorDrawable){
+            canvas.drawCircle(
+                    mMainButtonBounds.centerX(),
+                    mMainButtonBounds.centerY(),
+                    mButtonSize/2,
+                    mButtonPaint);
+        } else {
+            mButtonBackground.draw(canvas);
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        final float preferedSize = getResources().getDisplayMetrics().widthPixels/5f;
+
+        int measuredWidth = (int)preferedSize+getPaddingLeft()+getPaddingRight();
+        int measuredHeight = (int) (preferedSize*(getItemCount()+1)+getPaddingBottom()+getPaddingTop());
+
+        setMeasuredDimension(measuredWidth, measuredHeight);
+    }
+
+    public void setExpanded(boolean toExpand){
+        if (isExpanded != toExpand) {
+            isAnimating = true;
+            isExpanded = toExpand;
+            float endValue = toExpand ? 1f : 0f;
+            ValueAnimator animator = ValueAnimator.ofFloat(expandAnimatedValue, endValue);
+            animator.setDuration(EXPAND_ANIM_DURATION);
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
-                public void draw(Canvas canvas, Paint paint) {
-                    canvas.drawCircle(0,0,mSecButtonsSize, mButtonPaint);
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    expandAnimatedValue = (float) animation.getAnimatedValue();
+                    invalidate();
                 }
             });
-            mButtonBackground = shape;
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    isAnimating = false;
+                }
+            });
+            animator.start();
         }
     }
 
@@ -108,25 +187,38 @@ public class FloatingMultiActionButton extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        canvas.getClipBounds(mViewBounds);
-        mViewBounds.left += getPaddingLeft();
-        mViewBounds.top += getPaddingTop();
-        mViewBounds.right -= getPaddingRight();
-        mViewBounds.bottom -= getPaddingBottom();
-        Log.d(TAG, "Size = "+mButtonSize);
-
-        mButtonBackground.setBounds(0, 0, (int) mButtonSize, (int) mButtonSize);
-
-        if (mButtonBackground instanceof ColorDrawable){
-            canvas.drawCircle(
-                    mViewBounds.right-mButtonSize/2,
-                    mViewBounds.bottom-mButtonSize/2,
-                    mButtonSize/2,
-                    mButtonPaint);
-        } else {
-            mButtonBackground.draw(canvas);
+    public boolean onTouchEvent(MotionEvent event) {
+        float mX = event.getX()+getPaddingLeft();
+        float mY = event.getY()+getPaddingTop();
+        if (mViewBounds.contains((int)mX, (int) mY)) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    if ( mMainButtonBounds.contains((int) mX, (int) mY)){
+                        //Log.d(TAG, "item clicked (main button)");
+                        setExpanded(!isExpanded);
+                    } else {
+                        for (Item item : items) {
+                            if (item.getBounds().contains((int) mX, (int) mY)) {
+                                if (onItemClickListener != null) onItemClickListener.onItemClick(item.getId());
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case MotionEvent.ACTION_CANCEL: {
+                    break;
+                }
+            }
+            return true;
         }
+        return super.onTouchEvent(event);
     }
 
     public int getItemCount(){
@@ -138,15 +230,26 @@ public class FloatingMultiActionButton extends View {
       mButtonBackground = drawable;
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener){
+        onItemClickListener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int id);
+    }
+
     public static class Item{
 
         private static final String TAG = Item.class.getSimpleName();
         private final int mId;
         private String mName;
         private Drawable mIcon, mBackground;
+        private Rect bounds;
 
         public Item(int id){
             mId = id;
+            bounds = new Rect();
+            mName = "Default name";
         }
 
         public int getId() {
@@ -181,6 +284,17 @@ public class FloatingMultiActionButton extends View {
             if (mBackground != null && mBackground == background) return this;
             mBackground = background;
             return this;
+        }
+
+        private Rect getBounds() {
+            return bounds;
+        }
+
+        private void setBounds(int left, int top, int right, int bottom) {
+            this.bounds.left = left;
+            this.bounds.top = top;
+            this.bounds.right = right;
+            this.bounds.bottom = bottom;
         }
     }
 }
