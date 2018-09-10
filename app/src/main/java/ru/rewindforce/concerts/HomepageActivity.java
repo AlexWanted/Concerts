@@ -1,12 +1,17 @@
 package ru.rewindforce.concerts;
 
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import ru.rewindforce.concerts.Homepage.ConcertsOverviewFragment;
+import ru.rewindforce.concerts.Views.FloatingMultiActionButton;
 
 public class HomepageActivity extends AppCompatActivity {
 
@@ -15,6 +20,15 @@ public class HomepageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
         setStatusBarTranslucent(false);
+
+        FloatingMultiActionButton fmab = findViewById(R.id.fmab);
+        fmab.setOnItemClickListener(new FloatingMultiActionButton.OnItemClickListener() {
+            @Override
+            public void onItemClick(int id) {
+                Toast.makeText(getApplicationContext(), "Id = "+id, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         if (getSupportFragmentManager().findFragmentByTag("concerts_overview") == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             ConcertsOverviewFragment overviewFragment = ConcertsOverviewFragment.newInstance();
