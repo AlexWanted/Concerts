@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="FloatingMultiActionButton">
-        <attr name="fmabGravity" format="enum">
+    <declare-styleable name="FloatingActionButton">
+        <attr name="ButtonGravity" format="enum">
             <enum name="start" value="0"/>
             <enum name="end" value="1"/>
         </attr>
-        <attr name="fmabSize" format="dimension"/>
-        <attr name="fmabElevation" format="dimension"/>
-        <attr name="fmabColor" format="color"/>
-        <attr name="fmabItemTextPadding" format="dimension"/>
-        <attr name="fmabItemTextColor" format="color"/>
-        <attr name="fmabIconPadding" format="dimension"/>
-        <attr name="fmabItemTextSize" format="dimension"/>
-        <attr name="fmabPromptTextSize" format="dimension"/>
-        <attr name="fmabPrompt" format="string"/>
+        <attr name="IconPadding" format="dimension"/>
+        <attr name="ButtonSize" format="dimension"/>
+        <attr name="ButtonColor" format="color"/>
+        <attr name="ButtonElevation" format="dimension"/>
+        <attr name="Prompt" format="string"/>
+        <attr name="TextSize" format="dimension"/>
+        <attr name="TextColor" format="color"/>
+        <attr name="TextPadding" format="dimension"/>
     </declare-styleable>
 </resources>
