@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="FloatingActionButton">
+    <declare-styleable name="FloatingActionLayout">
         <attr name="ButtonGravity" format="enum">
             <enum name="start" value="0"/>
             <enum name="end" value="1"/>
         </attr>
+        <attr name="ItemPadding" format="dimension"/>
         <attr name="IconPadding" format="dimension"/>
         <attr name="ButtonSize" format="dimension"/>
         <attr name="ButtonColor" format="color"/>
