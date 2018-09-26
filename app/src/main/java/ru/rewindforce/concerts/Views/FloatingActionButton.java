@@ -1,28 +1,24 @@
 package ru.rewindforce.concerts.Views;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.View;
 
 
 import ru.rewindforce.concerts.R;
 
-public class FloatingActionButtonDo extends View {
+public class FloatingActionButton extends View {
 
-    private static final String TAG = FloatingActionButtonDo.class.getSimpleName();
+    private static final String TAG = FloatingActionButton.class.getSimpleName();
 
-    public static final int BUTTON_SIZE_DEFAULT = 56;
-    public static final int BUTTON_SIZE_MINI = 40;
+    public static final int SIZE_NORMAL = 56;
+    public static final int  SIZE_MINI = 40;
 
 
     private Context mContext;
@@ -38,33 +34,32 @@ public class FloatingActionButtonDo extends View {
     private Paint mButtonPaint;
 
 
-    public FloatingActionButtonDo(Context context) {
+    public FloatingActionButton(Context context) {
         this(context, null);
     }
 
-    public FloatingActionButtonDo(Context context, AttributeSet attrs) {
+    public FloatingActionButton(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public FloatingActionButtonDo(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
 
         mViewBounds = new Rect();
         mButtonBounds = new Rect();
-
         mButtonPaint = new Paint();
 
         setLayerType(LAYER_TYPE_SOFTWARE, null);
 
-        mIconPadding = MetricUtils.dpToPx(16);
-        mButtonSize = BUTTON_SIZE_DEFAULT;
-        mElevation = MetricUtils.dpToPx(1);
+        mIconPadding = MetricUtils.dpToPx(8);
+        mButtonSize = SIZE_NORMAL;
+        mElevation = MetricUtils.dpToPx(6);
 
         if (attrs != null) {
             TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionLayout, defStyleAttr, 0);
             mIconPadding = a.getDimensionPixelSize(R.styleable.FloatingActionLayout_IconPadding, mIconPadding);
-            mButtonSize = a.getDimensionPixelSize(R.styleable.FloatingActionLayout_ButtonSize,  BUTTON_SIZE_DEFAULT);
+            mButtonSize = a.getDimensionPixelSize(R.styleable.FloatingActionLayout_ButtonSize, SIZE_NORMAL);
             mButtonColor = a.getColor(R.styleable.FloatingActionLayout_ButtonColor, 0xFF4DD0E1);
             mElevation = a.getDimensionPixelSize(R.styleable.FloatingActionLayout_ButtonElevation, mElevation);
             a.recycle();
@@ -73,7 +68,7 @@ public class FloatingActionButtonDo extends View {
         setSize(mButtonSize);
         setColor(mButtonColor);
         mButtonPaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        //mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
+        mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
 
     }
 
@@ -83,10 +78,10 @@ public class FloatingActionButtonDo extends View {
         canvas.drawCircle(mButtonBounds.centerX(), mButtonBounds.centerY(), mButtonSize/2, mButtonPaint);
         if (mIcon != null) {
             mIcon.setBounds(
-                    (int) (mButtonBounds.centerX() - mButtonSize/2 + mIconPadding),
-                    (int) (mButtonBounds.centerX() - mButtonSize/2 + mIconPadding),
-                    (int) (mButtonBounds.centerX() + mButtonSize/2 - mIconPadding),
-                    (int) (mButtonBounds.centerX() + mButtonSize/2 - mIconPadding)
+                    mButtonBounds.centerX() - mButtonSize/2 + mIconPadding,
+                    mButtonBounds.centerX() - mButtonSize/2 + mIconPadding,
+                    mButtonBounds.centerX() + mButtonSize/2 - mIconPadding,
+                    mButtonBounds.centerX() + mButtonSize/2 - mIconPadding
             );
             mIcon.draw(canvas);
         }
@@ -97,8 +92,8 @@ public class FloatingActionButtonDo extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final float preferedSize;
         preferedSize = mButtonSize;
-        int measuredWidth = (int) (preferedSize + getPaddingLeft() + getPaddingRight());// + preferedSize*0.025 + mElevation);
-        int measuredHeight = (int) (preferedSize + getPaddingBottom() + getPaddingTop());// + preferedSize*0.025 + mElevation);
+        int measuredWidth = (int) (preferedSize + getPaddingLeft() + getPaddingRight() + preferedSize*0.025 + mElevation);
+        int measuredHeight = (int) (preferedSize + getPaddingBottom() + getPaddingTop() + preferedSize*0.025 + mElevation);
 
         setMeasuredDimension(
                 resolveSize(measuredWidth, widthMeasureSpec),
@@ -124,19 +119,13 @@ public class FloatingActionButtonDo extends View {
         mButtonBounds.right = w - getPaddingRight();
         mButtonBounds.bottom = h - getPaddingBottom();
 
-        /*mButtonBounds.left = getPaddingLeft() + mElevation/2;
-        mButtonBounds.top = getPaddingTop() + mElevation/2;
-        mButtonBounds.right = w - getPaddingRight() - mElevation/2;
-        mButtonBounds.bottom = h - getPaddingBottom() - mElevation/2;*/
-
     }
 
     /**
      * @param size desired size in dp
      * @return
      */
-
-    public FloatingActionButtonDo setSize(int size){
+    public FloatingActionButton setSize(int size){
         if (mButtonSize == MetricUtils.dpToPx(size)) return this;
         mButtonSize = MetricUtils.dpToPx(size);
         requestLayout();
@@ -147,17 +136,20 @@ public class FloatingActionButtonDo extends View {
         return mButtonSize;
     }
 
-    public FloatingActionButtonDo setColor(@ColorInt int color){
+    public FloatingActionButton setColor(@ColorInt int color){
         mButtonColor = color;
         mButtonPaint.setColor(color);
         invalidate();
         return this;
     }
 
-    public void setIcon(Drawable icon){
-        if (icon == mIcon) return;
-        mIcon = icon;
-        invalidate();
+    public FloatingActionButton setIcon(Drawable icon){
+        if (icon == mIcon) return this;
+        if (icon != null) {
+            mIcon = icon;
+            invalidate();
+        }
+        return this;
     }
 
     /**
@@ -174,11 +166,15 @@ public class FloatingActionButtonDo extends View {
      * @param elevation desired elevation in dp
      * @return
      */
-    public FloatingActionButtonDo setButtonElevation(int elevation){
+    public FloatingActionButton setButtonElevation(int elevation){
         mElevation = MetricUtils.dpToPx(elevation);
-        //mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
+        mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
         requestLayout();
         return this;
+    }
+
+    public Drawable getIcon(){
+        return mIcon;
     }
 
 }

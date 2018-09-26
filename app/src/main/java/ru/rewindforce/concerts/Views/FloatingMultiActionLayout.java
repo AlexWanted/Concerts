@@ -8,7 +8,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.os.Build;
 import android.support.annotation.ColorInt;
-import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -32,6 +31,7 @@ public class FloatingMultiActionLayout extends ViewGroup{
     private int mGravity;
     private int mItemPadding;
     private int mTextSize, mTextPadding;
+    private int mSelectedItem;
 
     private ArrayList<FloatingActionButton> mItemList;
     private ArrayList<TextView> mTextList;
@@ -157,6 +157,15 @@ public class FloatingMultiActionLayout extends ViewGroup{
         }
     }
 
+    public void setSelectedItem(int id){
+        if (mSelectedItem != id ){
+
+            mSelectedItem = id;
+            mItemList.get(0).setIcon(mItemList.get(id).getIcon());
+
+        }
+    }
+
     public boolean isExpanded(){
         return isExpanded;
     }
@@ -240,10 +249,9 @@ public class FloatingMultiActionLayout extends ViewGroup{
                 View.resolveSize(0, heightMeasureSpec));
         for (int i=0; i < mItemCount; i++) {
             FloatingActionButton child = mItemList.get(i);
-            //child.setSize(i == 0 ? FloatingActionButton.BUTTON_SIZE_DEFAULT : FloatingActionButton.BUTTON_SIZE_MINI);
-            //child.setButtonElevation(mElevation);
             child.setSize(i == 0 ? FloatingActionButton.SIZE_NORMAL : FloatingActionButton.SIZE_MINI);
-            if (mButtonsColor != 0) child.setBackgroundColor(mButtonsColor);
+            if (mButtonsColor != 0) child.setColor(mButtonsColor);
+            if (mElevation != 0) child.setButtonElevation(mElevation);
 
         }
         measureChildren(widthMeasureSpec, heightMeasureSpec);
