@@ -17,12 +17,12 @@ import android.view.View;
 
 import ru.rewindforce.concerts.R;
 
-public class FloatingActionButton extends View {
+public class FloatingActionButtonDo extends View {
 
-    private static final String TAG = FloatingActionButton.class.getSimpleName();
+    private static final String TAG = FloatingActionButtonDo.class.getSimpleName();
 
-    public static final int BUTTON_SIZE_DEFAULT = MetricUtils.dpToPx(56);
-    public static final int BUTTON_SIZE_MINI = MetricUtils.dpToPx(40);
+    public static final int BUTTON_SIZE_DEFAULT = 56;
+    public static final int BUTTON_SIZE_MINI = 40;
 
 
     private Context mContext;
@@ -38,15 +38,15 @@ public class FloatingActionButton extends View {
     private Paint mButtonPaint;
 
 
-    public FloatingActionButton(Context context) {
+    public FloatingActionButtonDo(Context context) {
         this(context, null);
     }
 
-    public FloatingActionButton(Context context, AttributeSet attrs) {
+    public FloatingActionButtonDo(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public FloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FloatingActionButtonDo(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
 
@@ -71,10 +71,9 @@ public class FloatingActionButton extends View {
 
         }
         setSize(mButtonSize);
-
         setColor(mButtonColor);
         mButtonPaint.setFlags(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
-        mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
+        //mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
 
     }
 
@@ -98,8 +97,8 @@ public class FloatingActionButton extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final float preferedSize;
         preferedSize = mButtonSize;
-        int measuredWidth = (int) (preferedSize + getPaddingLeft() + getPaddingRight() + preferedSize*0.025 + mElevation*2);
-        int measuredHeight = (int) (preferedSize + getPaddingBottom() + getPaddingTop() + preferedSize*0.025 + mElevation*2);
+        int measuredWidth = (int) (preferedSize + getPaddingLeft() + getPaddingRight());// + preferedSize*0.025 + mElevation);
+        int measuredHeight = (int) (preferedSize + getPaddingBottom() + getPaddingTop());// + preferedSize*0.025 + mElevation);
 
         setMeasuredDimension(
                 resolveSize(measuredWidth, widthMeasureSpec),
@@ -120,21 +119,26 @@ public class FloatingActionButton extends View {
      */
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mViewBounds.left = getPaddingLeft();
-        mViewBounds.top = getPaddingTop();
-        mViewBounds.right = w - getPaddingRight();
-        mViewBounds.bottom = h - getPaddingBottom();
+        mButtonBounds.left = getPaddingLeft();
+        mButtonBounds.top = getPaddingTop();
+        mButtonBounds.right = w - getPaddingRight();
+        mButtonBounds.bottom = h - getPaddingBottom();
 
-        mButtonBounds.left = (int) (mViewBounds.right - mButtonSize - mElevation);
-        mButtonBounds.top = (int) (mViewBounds.bottom - mButtonSize - mElevation );
-        mButtonBounds.right = (int) (mButtonBounds.left + mButtonSize + mElevation);
-        mButtonBounds.bottom = (int) (mButtonBounds.top + mButtonSize + mElevation);
+        /*mButtonBounds.left = getPaddingLeft() + mElevation/2;
+        mButtonBounds.top = getPaddingTop() + mElevation/2;
+        mButtonBounds.right = w - getPaddingRight() - mElevation/2;
+        mButtonBounds.bottom = h - getPaddingBottom() - mElevation/2;*/
 
     }
 
-    public FloatingActionButton setSize(int size){
-        if (mButtonSize == size) return this;
-        mButtonSize = size;
+    /**
+     * @param size desired size in dp
+     * @return
+     */
+
+    public FloatingActionButtonDo setSize(int size){
+        if (mButtonSize == MetricUtils.dpToPx(size)) return this;
+        mButtonSize = MetricUtils.dpToPx(size);
         requestLayout();
         return this;
     }
@@ -143,21 +147,36 @@ public class FloatingActionButton extends View {
         return mButtonSize;
     }
 
-    public FloatingActionButton setColor(@ColorInt int color){
+    public FloatingActionButtonDo setColor(@ColorInt int color){
         mButtonColor = color;
         mButtonPaint.setColor(color);
         invalidate();
         return this;
     }
 
+    public void setIcon(Drawable icon){
+        if (icon == mIcon) return;
+        mIcon = icon;
+        invalidate();
+    }
+
+    /**
+     * @param padding desired padding in dp
+     * @return
+     */
+    public void setIconPadding(int padding){
+        if (MetricUtils.dpToPx(padding) == mIconPadding ) return;
+        mIconPadding = MetricUtils.dpToPx(padding);
+        invalidate();
+    }
 
     /**
      * @param elevation desired elevation in dp
      * @return
      */
-    public FloatingActionButton setButtonElevation(int elevation){
+    public FloatingActionButtonDo setButtonElevation(int elevation){
         mElevation = MetricUtils.dpToPx(elevation);
-        mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
+        //mButtonPaint.setShadowLayer(mElevation/2, 0, mElevation/4, 0x40000000);
         requestLayout();
         return this;
     }

@@ -3,18 +3,18 @@ package ru.rewindforce.concerts.Views;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.graphics.drawable.shapes.RoundRectShape;
-import android.graphics.drawable.shapes.Shape;
+import android.os.Build;
 import android.support.annotation.ColorInt;
+import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -34,7 +34,8 @@ public class FloatingMultiActionLayout extends ViewGroup{
     private int mTextSize, mTextPadding;
 
     private ArrayList<FloatingActionButton> mItemList;
-    private ArrayList<TextView> mPromptList;
+    private ArrayList<TextView> mTextList;
+    private ArrayList<ImageView> mIconList;
     private int mItemCount;
     private OnItemClickListener mOnItemClickListener;
 
@@ -55,17 +56,18 @@ public class FloatingMultiActionLayout extends ViewGroup{
 
     public FloatingMultiActionLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
+        setChildrenDrawingOrderEnabled(true);
         mContext = context;
         mItemList = new ArrayList<>();
-        mPromptList = new ArrayList<>();
+        mTextList = new ArrayList<>();
+        mIconList = new ArrayList<>();
 
 
 
         mGravity = GRAVITY_END;
         mItemPadding = MetricUtils.dpToPx(10);
         mTextPadding = MetricUtils.dpToPx(5);
-        mTextSize = MetricUtils.dpToPx(12);
+        mTextSize = 12; //setting textSize in sp;
 
 
         if (attrs != null){
@@ -81,54 +83,78 @@ public class FloatingMultiActionLayout extends ViewGroup{
             else mGravity = GRAVITY_START;
         }
 
-        mBackground = new ColorDrawable(0xFF404040);
-        mBackground.setAlpha(0);
+        mBackground = new ColorDrawable(0xFF000000);
+        mBackground.setAlpha(204); // 80% translucency
         setBackground(mBackground);
 
-        setExpanded(false);
+        setExpanded(true);
+
+        addItem(new FloatingActionButton(mContext), "default prompt");
 
     }
 
     public void setExpanded(boolean toExpand){
-        isExpanded = toExpand;
-        for (final View view: mItemList){
-            if (mItemList.indexOf(view) != mItemCount-1) {
-                View mainButton = mItemList.get(mItemCount - 1);
+        if (isExpanded != toExpand) {
+            isExpanded = toExpand;
+            for (int i = 0; i < mItemCount; i++) {
+                final View button = mItemList.get(i);
+                final View text = mTextList.get(i);
+                View mainButton = mItemList.get(0);
                 if (isExpanded) {
-                    view.animate()
+                    if (mainButton != button)
+                        button.animate()
+                                .translationY(0)
+                                .setDuration(EXPAND_ANIMATION_DURATION)
+                                .withStartAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        button.setVisibility(VISIBLE);
+                                    }
+                                }).start();
+                    text.animate()
                             .translationY(0)
                             .setDuration(EXPAND_ANIMATION_DURATION)
+                            .alpha(1f)
                             .withStartAction(new Runnable() {
                                 @Override
                                 public void run() {
-                                    view.setVisibility(VISIBLE);
+                                    text.setVisibility(VISIBLE);
                                 }
-                            })
-                            .start();
+                            }).start();
                 } else {
-                    view.animate()
-                            .translationY(mainButton.getY() - view.getY() + mainButton.getMeasuredHeight() / 2 - view.getMeasuredHeight()/2)
+                    if (mainButton != button)
+                        button.animate()
+                                .translationY(mainButton.getY() - button.getY() + mainButton.getMeasuredHeight() / 2 - button.getMeasuredHeight() / 2)
+                                .setDuration(EXPAND_ANIMATION_DURATION)
+                                .withEndAction(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        button.setVisibility(INVISIBLE);
+                                    }
+                                }).start();
+                    text.animate()
+                            .translationY(mainButton.getY() - text.getY() + mainButton.getMeasuredHeight() / 2 - text.getMeasuredHeight() / 2)
                             .setDuration(EXPAND_ANIMATION_DURATION)
+                            .alpha(0f)
                             .withEndAction(new Runnable() {
                                 @Override
                                 public void run() {
-                                    view.setVisibility(INVISIBLE);
+                                    text.setVisibility(INVISIBLE);
                                 }
-                            })
-                            .start();
+                            }).start();
                 }
             }
+            int alpha = mBackground.getAlpha();
+            ValueAnimator bgColorAnimator = ValueAnimator.ofInt(alpha, isExpanded ? 204 : 0);
+            bgColorAnimator.setDuration(EXPAND_ANIMATION_DURATION);
+            bgColorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    mBackground.setAlpha((int) animation.getAnimatedValue());
+                }
+            });
+            bgColorAnimator.start();
         }
-        int alpha = mBackground.getAlpha();
-        ValueAnimator bgColorAnimator = ValueAnimator.ofInt(alpha, isExpanded ? 200 : 0);
-        bgColorAnimator.setDuration(EXPAND_ANIMATION_DURATION);
-        bgColorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                mBackground.setAlpha((int)animation.getAnimatedValue());
-            }
-        });
-        bgColorAnimator.start();
     }
 
     public boolean isExpanded(){
@@ -138,6 +164,9 @@ public class FloatingMultiActionLayout extends ViewGroup{
     public int addItem(FloatingActionButton item, String text) {
         int id = mItemCount;
         mItemCount++;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            item.setElevation(MetricUtils.dpToPx(6));
+        }
         mItemList.add(item);
         TextView prompt = new TextView(mContext);
         prompt.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
@@ -145,18 +174,23 @@ public class FloatingMultiActionLayout extends ViewGroup{
         prompt.setText(text);
         prompt.setTextColor(0xFFFFFFFF);
         prompt.setPadding(mTextPadding, mTextPadding, mTextPadding, mTextPadding);
-        ShapeDrawable shapeDrawable = new ShapeDrawable();
+        prompt.setGravity(mGravity == GRAVITY_START ? Gravity.START : Gravity.END);
 
         ShapeDrawable drawable = new ShapeDrawable();
         drawable.setShape(new RoundRectShape(new float[] {
                 MetricUtils.dpToPx(5),
                 MetricUtils.dpToPx(5),
                 MetricUtils.dpToPx(5),
+                MetricUtils.dpToPx(5),
+                MetricUtils.dpToPx(5),
+                MetricUtils.dpToPx(5),
+                MetricUtils.dpToPx(5),
                 MetricUtils.dpToPx(5)}, null, null));
         drawable.getPaint().setColor(0xFF404040);
 
-        prompt.setBackground(new ShapeDrawable());
-        mPromptList.add(prompt);
+        prompt.setBackground(drawable);
+        mTextList.add(prompt);
+
         addView(prompt);
         addView(item);
         requestLayout();
@@ -168,20 +202,25 @@ public class FloatingMultiActionLayout extends ViewGroup{
     }
 
 
-
+    /**
+     * @param color desired buttons color
+     */
     public void setButtonsColor(@ColorInt int color){
         if (mButtonsColor == color) return;
         mButtonsColor = color;
         requestLayout();
     }
-
     /**
      * @param elevation desired elevation in dp
      */
-    public void setElevation(int elevation){
+    public void setButtonsElevation(int elevation){
         if (mElevation == elevation) return;
         mElevation = elevation;
         requestLayout();
+    }
+
+    public int getItemCount(){
+        return mItemCount;
     }
 
     public FloatingActionButton getItem(int id) throws IndexOutOfBoundsException{
@@ -191,7 +230,7 @@ public class FloatingMultiActionLayout extends ViewGroup{
 
     public String getItemPrompt(int id) throws IndexOutOfBoundsException{
         if (id < 0 || id >= mItemCount) throw new IndexOutOfBoundsException("No itemPrompt with provided Id found");
-        return mPromptList.get(id).getText().toString();
+        return mTextList.get(id).getText().toString();
     }
 
     @Override
@@ -201,24 +240,30 @@ public class FloatingMultiActionLayout extends ViewGroup{
                 View.resolveSize(0, heightMeasureSpec));
         for (int i=0; i < mItemCount; i++) {
             FloatingActionButton child = mItemList.get(i);
-            child.setSize(i == mItemCount-1 ? FloatingActionButton.BUTTON_SIZE_DEFAULT : FloatingActionButton.BUTTON_SIZE_MINI);
-            child.setButtonElevation(mElevation);
+            //child.setSize(i == 0 ? FloatingActionButton.BUTTON_SIZE_DEFAULT : FloatingActionButton.BUTTON_SIZE_MINI);
+            //child.setButtonElevation(mElevation);
+            child.setSize(i == 0 ? FloatingActionButton.SIZE_NORMAL : FloatingActionButton.SIZE_MINI);
+            if (mButtonsColor != 0) child.setBackgroundColor(mButtonsColor);
+
         }
         measureChildren(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        int prevIndex = 0;
         for (int i=mItemCount-1; i>=0; i--){
-            View child = mItemList.get(i);
+            int index = i == mItemCount-1 ? 0 : i+1;
+
+            View child = mItemList.get(index);
 
             int centerX;
-            if (mGravity == GRAVITY_START) centerX = getLeft() + getPaddingLeft() + mItemList.get(mItemCount-1).getMeasuredWidth()/2;
-            else centerX = getRight() - getPaddingRight() - mItemList.get(mItemCount-1).getMeasuredWidth()/2;
+            if (mGravity == GRAVITY_START) centerX = getLeft() + getPaddingLeft() + mItemList.get(0).getMeasuredWidth()/2;
+            else centerX = getRight() - getPaddingRight() - mItemList.get(0).getMeasuredWidth()/2;
 
-            int centerY = i==mItemCount-1 ?
+            int centerY = index==0 ?
                     getBottom()-getPaddingBottom() - child.getMeasuredHeight()/2 :
-                    mItemList.get(i+1).getTop() - child.getMeasuredHeight()/2 - mItemPadding;
+                    mItemList.get(prevIndex).getTop() - child.getMeasuredHeight()/2 - mItemPadding;
 
             child.layout(
                 centerX - child.getMeasuredWidth()/2,
@@ -227,23 +272,88 @@ public class FloatingMultiActionLayout extends ViewGroup{
                 centerY + child.getMeasuredHeight()/2
             );
 
-            mPromptList.get(i).layout(
-                    mGravity == GRAVITY_START ? getPaddingLeft() + mItemList.get(mItemCount-1).getMeasuredWidth() : getPaddingLeft(),
-                    child.getTop(),
-                    mGravity == GRAVITY_START ? getRight() - getPaddingRight() : getRight() - getPaddingRight() - mItemList.get(mItemCount-1).getMeasuredWidth(),
-                    child.getBottom()
+            int promptLeft;
+            int promptRight;
+            int mainButtonWidth = mItemList.get(0).getMeasuredWidth();
+            if (mGravity == GRAVITY_START) {
+                promptLeft = (int) (getPaddingLeft() + mainButtonWidth + mainButtonWidth*0.1);
+                promptRight = Math.min(
+                        promptLeft + mTextList.get(index).getMeasuredWidth(),
+                        getRight() - getPaddingRight());
+            } else {
+                promptRight = (int) (getRight() - getPaddingRight() - mainButtonWidth - mainButtonWidth*0.1);
+                promptLeft = Math.max(
+                        promptRight - mTextList.get(index).getMeasuredWidth(),
+                        getPaddingLeft());
+            }
+
+            mTextList.get(index).layout(
+                    promptLeft,
+                    Math.max(centerY- mTextList.get(index).getMeasuredHeight()/2, child.getTop()),
+                    promptRight,
+                    Math.min(centerY+ mTextList.get(index).getMeasuredHeight()/2, child.getBottom())
             );
 
-            final int index = i;
-            child.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mOnItemClickListener != null) mOnItemClickListener.onItemClick(index);
+            if (index == 0){
+                child.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setExpanded(!isExpanded);
+                    }
+                });
+            } else {
+                final int id = index;
+                child.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mOnItemClickListener != null) mOnItemClickListener.onItemClick(id-1);
+                    }
+                });
+            }
+            prevIndex = index;
+        }
+        if (!isExpanded) {
+            View mainButton = mItemList.get(mItemCount - 1);
+            for (int i = 0; i < mItemCount; i++) {
+                if (i != mItemCount-1) {
+                    mItemList.get(i).setTranslationY(mainButton.getY() - mItemList.get(i).getY() + mainButton.getMeasuredHeight() / 2 - mItemList.get(i).getMeasuredHeight() / 2);
+                    mItemList.get(i).setVisibility(INVISIBLE);
                 }
-            });
 
+                if (i != mItemCount-1) mTextList.get(i).setTranslationY( mainButton.getY() - mTextList.get(i).getY() + mainButton.getMeasuredHeight()/2 - mTextList.get(i).getMeasuredHeight()/2);
+                mTextList.get(i).setAlpha(0f);
+            }
+            mBackground.setAlpha(0);
         }
 
+    }
+
+    /**
+     * Returns the index of the child to draw for this iteration. Override this
+     * if you want to change the drawing order of children. By default, it
+     * returns i.
+     * <p>
+     * NOTE: In order for this method to be called, you must enable child ordering
+     * first by calling {@link #setChildrenDrawingOrderEnabled(boolean)}.
+     *
+     * @param childCount
+     * @param i          The current iteration.
+     * @return The index of the child to draw this iteration.
+     * @see #setChildrenDrawingOrderEnabled(boolean)
+     * @see #isChildrenDrawingOrderEnabled()
+     */
+    @Override
+    protected int getChildDrawingOrder(int childCount, int i) {
+        int result;
+        if (i < childCount - 2) result = i+2;
+        else result = (childCount-1) - i;
+        return result;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!super.onTouchEvent(event)) setExpanded(false);
+        return super.onTouchEvent(event);
     }
 
     public interface OnItemClickListener {
