@@ -15,4 +15,52 @@
         <item>ноября</item>
         <item>декабря</item>
     </string-array>
+
+    <string name="sign_up_now"><![CDATA[Нет аккаунта? <b>Зарегистрируйтесь</b>]]></string>
+    <string name="sign_in">Войти</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="login">Вход</string>
+    <string name="register">Регистрация</string>
+    <string name="offline">Оффлайн</string>
+    <string name="users_login">Логин</string>
+    <string name="email">E-Mail</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="password">Пароль</string>
+    <string name="forgot_password">Забыли пароль?</string>
+
+    <plurals name="days_gone">
+        <item quantity="zero">Прошло\n%1$d дней</item>
+        <item quantity="one">Прошёл\n%1$d день</item>
+        <item quantity="two">Прошло\n%1$d дня</item>
+        <item quantity="few">Прошло\n%1$d дня</item>
+        <item quantity="many">Прошло\n%1$d дней</item>
+        <item quantity="other">Прошло\n%1$d дней</item>
+    </plurals>
+
+    <plurals name="days_remaining">
+        <item quantity="zero">Осталось\n%1$d дней</item>
+        <item quantity="one">Остался\n%1$d день</item>
+        <item quantity="two">Осталось\n%1$d дня</item>
+        <item quantity="few">Осталось\n%1$d дня</item>
+        <item quantity="many">Осталось\n%1$d дней</item>
+        <item quantity="other">Осталось\n%1$d дней</item>
+    </plurals>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 </resources>

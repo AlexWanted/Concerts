@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="colorPrimary">#077EFB</color>
+    <color name="colorPrimaryDark">#293B72</color>
+    <color name="colorPrimaryDarkSignIn">#293B72</color>
+    <color name="colorPrimaryDarkSignUp">#f05f88</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="textInactive">#87FFFFFF</color>
+    <color name="tabTextInactive">#9E9E9E</color>
+    <color name="textActive">#FFFFFF</color>
+    <color name="mtrl_textinput_default_box_stroke_color" tools:ignore="PrivateResource">#87FFFFFF</color>
 </resources>
