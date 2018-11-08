@@ -1,7 +1,6 @@
 package ru.rewindforce.concerts.HomeScreen;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.joda.time.DateTime;
 
@@ -12,28 +11,29 @@ import ru.rewindforce.concerts.Authorization.AuthorizationActivity;
 public class HomeScreenPresenter {
 
     private HomeScreenFragment fragment;
-    public ArrayList<Concert> concertsList;
     private HomeScreenModel model;
+    ArrayList<Concert> concertsList;
 
-    HomeScreenPresenter() {
+    HomeScreenPresenter(int currentFragmentType) {
         concertsList = new ArrayList<>();
+        if(currentFragmentType == HomeScreenFragment.ARG_OVERVIEW) concertsList.add(null);
         model = new HomeScreenModel();
     }
 
-    public void setConcertsList(ArrayList<Concert> concertsList) {
+    void setConcertsList(ArrayList<Concert> concertsList) {
         this.concertsList.clear();
         this.concertsList.addAll(concertsList);
     }
 
-    public void attachFragment(HomeScreenFragment fragment) {
+    void attachFragment(HomeScreenFragment fragment) {
         this.fragment = fragment;
     }
 
-    public void detachFragment() {
+    void detachFragment() {
         this.fragment = null;
     }
 
-    public void loadUpcomingConcerts(int limit, int offset) {
+    void loadUpcomingConcerts(int limit, int offset) {
         String uid = fragment.getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
                 .getString(AuthorizationActivity.PREF_UID, "");
         String token = fragment.getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -52,7 +52,7 @@ public class HomeScreenPresenter {
                 });
     }
 
-    public void loadPastConcerts(int limit, int offset) {
+    void loadPastConcerts(int limit, int offset) {
         String uid = fragment.getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
                 .getString(AuthorizationActivity.PREF_UID, "");
         String token = fragment.getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
@@ -71,7 +71,9 @@ public class HomeScreenPresenter {
         });
     }
 
-    public void loadConcerts(int offset, int limit, String order_by, String asc_desc) {
+
+
+    void loadConcerts(int offset, int limit, String order_by, String asc_desc) {
         model.getFlatConcertsList(offset, limit, order_by, asc_desc,
                 new HomeScreenModel.ConcertsCallback() {
             @Override

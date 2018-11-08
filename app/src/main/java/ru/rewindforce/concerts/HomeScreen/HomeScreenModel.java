@@ -47,7 +47,7 @@ public class HomeScreenModel {
         });
     }
 
-    public void getWishlist(String token, String user_uid, int limit, int offset, long datetime,
+    void getWishlist(String token, String user_uid, int limit, int offset, long datetime,
                             String asc_desc, final ConcertsCallback callback) {
         concertsApi.getWishlist(token, user_uid, datetime, limit, offset, asc_desc).enqueue(new Callback<ArrayList<Concert>>() {
             @Override
@@ -77,7 +77,7 @@ public class HomeScreenModel {
         Call<ArrayList<Concert>> getData(@Query("limit") int limit, @Query("offset") int offset,
                                          @Query("order_by") String order_by, @Query("asc_desc") String asc_desc);
 
-        @GET("/v1/concerts")
+        @GET("/v1/wishlist")
         Call<ArrayList<Concert>> getWishlist(@Header("Authorization") String token,
                                              @Query("user_uid") String user_uid, @Query("datetime") long datetime,
                                              @Query("limit") int limit, @Query("offset") int offset,

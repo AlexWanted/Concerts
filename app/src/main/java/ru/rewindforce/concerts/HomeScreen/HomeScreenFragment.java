@@ -41,7 +41,7 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
     private boolean canLoad = true;
     private int pastVisibleItems, visibleItemCount, totalItemCount;
     private GridLayoutManager gridConcertsLayoutManager;
-    private int offset = 0, count = 9;
+    private int offset = 0, count = 8;
     private int currentFragmentType = 1;
     private HomepageActivity activity;
 
@@ -68,7 +68,7 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
         if (getArguments() != null)
             currentFragmentType = getArguments().getInt(BUNDLE_TYPE);
 
-        presenter = new HomeScreenPresenter();
+        presenter = new HomeScreenPresenter(currentFragmentType);
         concertsAdapter = new ConcertAdapter(activity.getApplicationContext(), presenter.concertsList,
                 new DateTime(), currentFragmentType);
     }
@@ -98,8 +98,8 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
         concertsRecycler.setLayoutManager(gridConcertsLayoutManager);
         concertsAdapter.setOnConcertClickedListener(new ConcertAdapter.OnConcertClicked() {
             @Override
-            public void onConcertClicked(int position) {
-                activity.openConcertDetailsFragment(presenter.concertsList.get(position));
+            public void onConcertClicked(Concert concert) {
+                activity.openConcertDetailsFragment(concert);
             }
         });
         concertsRecycler.setAdapter(concertsAdapter);
@@ -108,7 +108,8 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
             offset = savedInstanceState.getInt(BUNDLE_OFFSET);
             listState = savedInstanceState.getParcelable(BUNDLE_LIST_STATE);
             gridConcertsLayoutManager.onRestoreInstanceState(listState);
-        } else if (presenter.concertsList.size() == 0){
+        } else if ((presenter.concertsList.contains(null) && presenter.concertsList.size() == 1) ||
+                    presenter.concertsList.size() == 0 ){
             startLoadingConcerts();
         }
         concertsRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -146,7 +147,7 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
         if (presenter != null) presenter.detachFragment();
     }
 
-    public void startLoadingConcerts() {
+    void startLoadingConcerts() {
         refreshLayout.setRefreshing(true);
         Log.e(String.valueOf(currentFragmentType), "startLoadingConcerts");
         switch (currentFragmentType) {
@@ -162,15 +163,16 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
         }
     }
 
-    public void onConcertsLoad() {
+    void onConcertsLoad() {
+        concertsAdapter.notifyItemChanged(0);
         Log.e(String.valueOf(currentFragmentType), "onConcertsLoad");
-        for (int i = offset; i < offset+count; i++)
+        for (int i = offset+(currentFragmentType == ARG_OVERVIEW ? 1 : 0); i < offset+count; i++)
             concertsAdapter.notifyItemInserted(i);
         canLoad = true;
         refreshLayout.setRefreshing(false);
     }
 
-    public void onLoadError(boolean shouldLoadAgain) {
+    void onLoadError(boolean shouldLoadAgain) {
         canLoad = true;
         offset -= count;
         refreshLayout.setRefreshing(false);
