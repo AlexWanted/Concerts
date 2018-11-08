@@ -41,7 +41,7 @@ public class AddConcertPresenter {
     }
 
     public void addConcert(String token, String uid,
-                           String band, String club, long datetime, byte[] imageByteArray) {
+                           String title, String club, long datetime, byte[] imageByteArray) {
         if (fragment != null) {
             File file = new File(fragment.getContext().getCacheDir(), "tempimage.webp");
             if (file.exists()) file.delete();
@@ -59,12 +59,12 @@ public class AddConcertPresenter {
 
             RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), file);
             MultipartBody.Part body = MultipartBody.Part.createFormData("image", file.getName(), reqFile);
-            RequestBody partBand = RequestBody.create(MediaType.parse("text/plain"), band);
+            RequestBody partTitle = RequestBody.create(MediaType.parse("text/plain"), title);
             RequestBody partClub = RequestBody.create(MediaType.parse("text/plain"), club);
             RequestBody partDatetime = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(datetime));
             RequestBody partUid = RequestBody.create(MediaType.parse("text/plain"), uid);
 
-            model.addConcertList(token, partUid, partBand, partClub,
+            model.addConcertList(token, partUid, partTitle, partClub,
                     partDatetime, body, new AddConcertModel.AddConcertCallback() {
                     @Override
                     public void onResponse() {

@@ -42,7 +42,7 @@ public class AddConcertFragment extends Fragment {
     private ImageView thumbnail;
     private Bitmap currentBitmap;
     private AddConcertPresenter presenter;
-    private TextInputEditText editBand, editClub, editDate, editTime;
+    private TextInputEditText editTitle, editClub, editDate, editTime;
     private Button buttonAccept;
     private int year, month, day, hour, minutes;
     private String currentBand, currentClub;
@@ -64,7 +64,7 @@ public class AddConcertFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_add_concert, container, false);
         thumbnail = view.findViewById(R.id.concert_thumbnail);
-        editBand = view.findViewById(R.id.edit_band);
+        editTitle = view.findViewById(R.id.edit_title);
         editClub = view.findViewById(R.id.edit_club);
         editDate = view.findViewById(R.id.edit_date);
         editTime = view.findViewById(R.id.edit_time);
@@ -178,10 +178,10 @@ public class AddConcertFragment extends Fragment {
         buttonAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (editBand.getText() != null && editClub.getText() != null
+                if (editTitle.getText() != null && editClub.getText() != null
                         && editDate.getText() != null && editTime.getText() != null
                         && currentBitmap != null) {
-                    currentBand = editBand.getText().toString();
+                    currentBand = editTitle.getText().toString();
                     currentClub = editClub.getText().toString();
                     String token = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
                             .getString(AuthorizationActivity.PREF_TOKEN, "");

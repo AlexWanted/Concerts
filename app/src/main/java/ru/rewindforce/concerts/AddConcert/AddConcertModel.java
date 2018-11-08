@@ -30,9 +30,9 @@ public class AddConcertModel {
     }
 
     public void addConcertList(String token, RequestBody uid,
-                               RequestBody band, RequestBody club, RequestBody datetime,
+                               RequestBody title, RequestBody club, RequestBody datetime,
                                MultipartBody.Part image, final AddConcertCallback callback) {
-        addConcertApi.addConcert(token, uid, band, club, datetime, image)
+        addConcertApi.addConcert(token, uid, title, club, datetime, image)
                 .enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -61,7 +61,7 @@ public class AddConcertModel {
         @Multipart
         @POST("/v1/concerts")
         Call<ResponseBody> addConcert(@Header("Authorization") String token, @Part("uid") RequestBody uid,
-                                      @Part("band") RequestBody band, @Part("club") RequestBody club,
+                                      @Part("title") RequestBody title, @Part("club") RequestBody club,
                                       @Part("datetime") RequestBody datetime, @Part MultipartBody.Part image);
     }
 }
