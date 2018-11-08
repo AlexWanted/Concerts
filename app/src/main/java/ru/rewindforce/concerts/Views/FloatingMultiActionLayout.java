@@ -3,6 +3,7 @@ package ru.rewindforce.concerts.Views;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
@@ -10,8 +11,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
-import android.support.annotation.ColorInt;
-import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -19,8 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.ArrayList;
 
+import androidx.annotation.ColorInt;
 import ru.rewindforce.concerts.R;
 
 public class FloatingMultiActionLayout extends ViewGroup{
@@ -44,7 +46,7 @@ public class FloatingMultiActionLayout extends ViewGroup{
     private int mItemCount;
     private OnItemClickListener mOnItemClickListener;
 
-    private boolean isExpanded = true, isAnimating = false;
+    private boolean isExpanded = false, isAnimating = false;
 
     private ColorDrawable mBackground;
     //Buttons parameters:
@@ -80,7 +82,7 @@ public class FloatingMultiActionLayout extends ViewGroup{
             mItemGap = a.getDimensionPixelSize(R.styleable.FloatingActionLayout_ItemPadding, mItemGap);
             mTextPadding = a.getDimensionPixelSize(R.styleable.FloatingActionLayout_TextPadding, mTextPadding);
             mTextSize = a.getDimension(R.styleable.FloatingActionLayout_TextSize, mTextSize);
-            setButtonsColor(a.getColor(R.styleable.FloatingActionButton_ButtonColor, 0));
+            setButtonsColor(a.getColor(R.styleable.FloatingActionLayout_ButtonColor, 0));
         }
 
         if (getResources().getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL){
@@ -89,12 +91,19 @@ public class FloatingMultiActionLayout extends ViewGroup{
         }
 
         mBackground = new ColorDrawable(0xFF000000);
-        mBackground.setAlpha(204); // 80% translucency
-        setBackground(mBackground);
+        mBackground.setAlpha(isExpanded ? 204 : 0); // 80% translucency
+
         setExpanded(false);
+
+        setBackground(mBackground);
 
         addItem("default prompt");
 
+    }
+
+    public void setPrompt(String prompt){
+        mTextList.get(0).setText(prompt);
+        requestLayout();
     }
 
     public void setExpanded(boolean toExpand){
@@ -317,6 +326,7 @@ public class FloatingMultiActionLayout extends ViewGroup{
         measureChildren(widthMeasureSpec, heightMeasureSpec);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int prevIndex = 0;
