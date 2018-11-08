@@ -1,5 +1,6 @@
 package ru.rewindforce.concerts;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import ru.rewindforce.concerts.AddConcert.AddConcertFragment;
 import ru.rewindforce.concerts.HomeScreen.Concert;
-import ru.rewindforce.concerts.HomeScreen.ConcertDetailsFragment;
+import ru.rewindforce.concerts.ConcertDetails.ConcertDetailsFragment;
 import ru.rewindforce.concerts.HomeScreen.HomeScreenFragment;
 import ru.rewindforce.concerts.MyConcerts.MyConcertsFragment;
 
@@ -40,6 +41,12 @@ public class HomepageActivity extends AppCompatActivity implements MyConcertsFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
         setStatusBarTranslucent(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
 
         if(savedInstanceState != null && !savedInstanceState.isEmpty())
             currentFragmentTag = savedInstanceState.getString("current_fragment");
@@ -49,7 +56,7 @@ public class HomepageActivity extends AppCompatActivity implements MyConcertsFra
         bottomNavigation.getMenu().getItem(0).setChecked(true);
 
         if (currentFragmentTag.equals("")) openFragment(OVERVIEW_FRAGMENT, OVERVIEW_INDEX,
-                    HomeScreenFragment.newInstance(HomeScreenFragment.ARG_OVERVIEW));
+                HomeScreenFragment.newInstance(HomeScreenFragment.ARG_OVERVIEW));
         else hideEverythingExceptCurrent();
         //tabReselectedListener = (OnTabReselected) getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
