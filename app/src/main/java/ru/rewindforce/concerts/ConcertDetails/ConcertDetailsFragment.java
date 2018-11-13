@@ -2,11 +2,15 @@ package ru.rewindforce.concerts.ConcertDetails;
 
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -14,12 +18,10 @@ import com.bumptech.glide.Glide;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import ru.rewindforce.concerts.Authorization.AuthorizationActivity;
+import ru.rewindforce.concerts.HomeScreen.Band;
 import ru.rewindforce.concerts.HomeScreen.Concert;
-import ru.rewindforce.concerts.HomeScreen.HomeScreenPresenter;
 import ru.rewindforce.concerts.R;
 import ru.rewindforce.concerts.Views.FloatingMultiActionLayout;
 
@@ -29,6 +31,7 @@ public class ConcertDetailsFragment extends Fragment {
     private Concert concert;
     private FloatingMultiActionLayout fab;
     private ConcertDetailsPresenter presenter;
+    private LinearLayout lineUpLayout;
 
     public ConcertDetailsFragment() { }
 
@@ -90,13 +93,13 @@ public class ConcertDetailsFragment extends Fragment {
         text_date.setText(new DateTime(concert.getDatetime()).toString(DateTimeFormat.forPattern("dd.MM.yyyy")));
         TextView text_time = view.findViewById(R.id.text_info_time);
         text_time.setText(new DateTime(concert.getDatetime()).toString(DateTimeFormat.forPattern("HH:mm")));
-        TextView text_crowd = view.findViewById(R.id.text_peoples_going);
-        text_crowd.setText(String.valueOf(concert.getCrowd()));
 
         String imageURL = "http://rewindconcerts.000webhostapp.com/thumbnails/"
                 +concert.getDatetime()+"_"+concert.getId()+".webp";
         ImageView header = view.findViewById(R.id.header_bg);
         Glide.with(getContext()).load(imageURL).into(header);
+
+        lineUpLayout = view.findViewById(R.id.line_up_bands);
 
         return view;
     }
@@ -125,6 +128,18 @@ public class ConcertDetailsFragment extends Fragment {
 
     void onLoadError(boolean shouldLoadAgain) {
 
+    }
+
+    void onLineUpLoad(Band band) {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.band_item, lineUpLayout, false);
+        TextView bandName = view.findViewById(R.id.band_name);
+        TextView bandGenreAndCountry = view.findViewById(R.id.band_country_and_genre);
+        bandName.setText(band.getBandName());
+        String genreAndCountry = band.getBandCountry()+", "+band.getBandGenre();
+        bandGenreAndCountry.setText(genreAndCountry);
+        ImageView bandAvatar = view.findViewById(R.id.band_icon);
+        band.loadBandAvatar(getContext(), bandAvatar);
+        lineUpLayout.addView(view);
     }
 
     void onStatusLoad(String status) {

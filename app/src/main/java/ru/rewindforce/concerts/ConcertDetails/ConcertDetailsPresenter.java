@@ -42,7 +42,7 @@ public class ConcertDetailsPresenter {
         model.getLineUp(concert_id, new ConcertDetailsModel.ConcertsCallback() {
             @Override
             public void onLineUp(ArrayList<Band> bands) {
-                for(Band band : bands) Log.e("BAND", band.getBandName());
+                for(Band band : bands) if (fragment != null) fragment.onLineUpLoad(band);
             }
 
             @Override
