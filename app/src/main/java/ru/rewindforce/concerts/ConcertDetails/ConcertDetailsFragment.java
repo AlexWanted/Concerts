@@ -2,15 +2,11 @@ package ru.rewindforce.concerts.ConcertDetails;
 
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -18,9 +14,14 @@ import com.bumptech.glide.Glide;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
+import java.util.ArrayList;
+
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import ru.rewindforce.concerts.Authorization.AuthorizationActivity;
 import ru.rewindforce.concerts.HomeScreen.Band;
+import ru.rewindforce.concerts.HomeScreen.BandAdapter;
 import ru.rewindforce.concerts.HomeScreen.Concert;
 import ru.rewindforce.concerts.R;
 import ru.rewindforce.concerts.Views.FloatingMultiActionLayout;
@@ -31,7 +32,8 @@ public class ConcertDetailsFragment extends Fragment {
     private Concert concert;
     private FloatingMultiActionLayout fab;
     private ConcertDetailsPresenter presenter;
-    private LinearLayout lineUpLayout;
+    private ArrayList<Band> bandArrayList;
+    private BandAdapter lineUpAdapter;
 
     public ConcertDetailsFragment() { }
 
@@ -51,6 +53,7 @@ public class ConcertDetailsFragment extends Fragment {
         }
 
         presenter = new ConcertDetailsPresenter();
+        bandArrayList = new ArrayList<>();
     }
 
     @Override
@@ -99,7 +102,12 @@ public class ConcertDetailsFragment extends Fragment {
         ImageView header = view.findViewById(R.id.header_bg);
         Glide.with(getContext()).load(imageURL).into(header);
 
-        lineUpLayout = view.findViewById(R.id.line_up_bands);
+        RecyclerView lineUpRecycler = view.findViewById(R.id.line_up_bands);
+        putDummyLineUp(concert.getBandsCount());
+        lineUpAdapter = new BandAdapter(getContext(), bandArrayList);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        lineUpRecycler.setLayoutManager(linearLayoutManager);
+        lineUpRecycler.setAdapter(lineUpAdapter);
 
         return view;
     }
@@ -125,21 +133,19 @@ public class ConcertDetailsFragment extends Fragment {
     void onConcertsLoad(int button_id) {
         fab.setSelectedItem(button_id);
     }
+    void onLoadError(boolean shouldLoadAgain) { }
 
-    void onLoadError(boolean shouldLoadAgain) {
-
+    void removeDummyLineUp(){
+        bandArrayList.clear();
     }
 
-    void onLineUpLoad(Band band) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.band_item, lineUpLayout, false);
-        TextView bandName = view.findViewById(R.id.band_name);
-        TextView bandGenreAndCountry = view.findViewById(R.id.band_country_and_genre);
-        bandName.setText(band.getBandName());
-        String genreAndCountry = band.getBandCountry()+", "+band.getBandGenre();
-        bandGenreAndCountry.setText(genreAndCountry);
-        ImageView bandAvatar = view.findViewById(R.id.band_icon);
-        band.loadBandAvatar(getContext(), bandAvatar);
-        lineUpLayout.addView(view);
+    private void putDummyLineUp(int count) {
+        for (int i = 0; i < count; i++) bandArrayList.add(null);
+    }
+
+    void onLineUpLoad(Band band, int position) {
+        bandArrayList.add(band);
+        lineUpAdapter.notifyItemChanged(position);
     }
 
     void onStatusLoad(String status) {
@@ -155,6 +161,4 @@ public class ConcertDetailsFragment extends Fragment {
                 break;
         }
     }
-
-
 }

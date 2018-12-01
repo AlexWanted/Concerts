@@ -2,7 +2,6 @@ package ru.rewindforce.concerts.HomeScreen;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -19,10 +18,11 @@ public class Band {
     private String band_name, band_country, band_genre;
 
     public int getId() { return band_id; }
-    public String getBandName() { return band_name; }
-    public String getBandCountry() { return band_country; }
-    public String getBandGenre() { return band_genre; }
-    public void loadBandAvatar(Context context, ImageView view) {
+    String getBandName() { return band_name; }
+    String getBandCountry() { return band_country; }
+    String getBandGenre() { return band_genre; }
+
+    void loadBandAvatar(Context context, ImageView view) {
         String imageURL = "https://rewindconcerts.000webhostapp.com/bands/avatars/lowres/"
                 + md5(String.valueOf(getId()))+".jpg";
         RequestBuilder<Drawable> thumbnailRequest = Glide.with(context).load(context.getResources().getDrawable(R.drawable.ic_band));

@@ -1,14 +1,12 @@
 package ru.rewindforce.concerts.ConcertDetails;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import ru.rewindforce.concerts.HomeScreen.Band;
 
-public class ConcertDetailsPresenter {
+class ConcertDetailsPresenter {
     private ConcertDetailsFragment fragment;
     private ConcertDetailsModel model;
 
@@ -42,7 +40,10 @@ public class ConcertDetailsPresenter {
         model.getLineUp(concert_id, new ConcertDetailsModel.ConcertsCallback() {
             @Override
             public void onLineUp(ArrayList<Band> bands) {
-                for(Band band : bands) if (fragment != null) fragment.onLineUpLoad(band);
+                if (fragment != null) {
+                    fragment.removeDummyLineUp();
+                    for (int i = 0; i < bands.size(); i++) fragment.onLineUpLoad(bands.get(i), i);
+                }
             }
 
             @Override
