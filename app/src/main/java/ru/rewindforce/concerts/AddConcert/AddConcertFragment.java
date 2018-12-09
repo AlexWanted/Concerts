@@ -100,25 +100,15 @@ public class AddConcertFragment extends Fragment {
                         .apply(new RequestOptions().circleCrop()).into(thumbnail);
             }
         }
-        thumbnail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivityForResult(presenter.getImageActivityIntent(), GET_IMAGE_RESPONSE);
-            }
-        });
+        thumbnail.setOnClickListener((View v) -> startActivityForResult(AddConcertPresenter.getImageActivityIntent(), GET_IMAGE_RESPONSE));
 
-        editDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DatePickerDialog.OnDateSetListener myCallBack = new DatePickerDialog.OnDateSetListener() {
-
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        AddConcertFragment.this.year = year;
-                        AddConcertFragment.this.month = monthOfYear+1;
-                        AddConcertFragment.this.day = dayOfMonth;
-                        editDate.setText(new DateTime(year, monthOfYear+1, dayOfMonth, 0, 0)
-                                .toString(DateTimeFormat.forPattern("dd.MM.yyyy")));
-                    }
+        editDate.setOnClickListener((View v) -> {
+                DatePickerDialog.OnDateSetListener myCallBack = (DatePicker datePicker, int year, int monthOfYear, int dayOfMonth) -> {
+                    AddConcertFragment.this.year = year;
+                    AddConcertFragment.this.month = monthOfYear+1;
+                    AddConcertFragment.this.day = dayOfMonth;
+                    editDate.setText(new DateTime(year, monthOfYear+1, dayOfMonth, 0, 0)
+                            .toString(DateTimeFormat.forPattern("dd.MM.yyyy")));
                 };
 
                 int dialogYear, dialogMonth, dialogDay;
@@ -139,20 +129,14 @@ public class AddConcertFragment extends Fragment {
                             dialogYear, dialogMonth - 1, dialogDay);
                     datePicker.show();
                 }
-            }
-        });
+            });
 
-        editTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TimePickerDialog.OnTimeSetListener myCallBack = new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        editTime.setOnClickListener((View v) ->{
+                TimePickerDialog.OnTimeSetListener myCallBack = (TimePicker timePicker, int hourOfDay, int minute) -> {
                         AddConcertFragment.this.hour = hourOfDay;
                         AddConcertFragment.this.minutes = minute;
                         editTime.setText(new DateTime(2000, 1, 1, hourOfDay, minute)
                                 .toString(DateTimeFormat.forPattern("HH:mm")));
-                    }
                 };
 
 
@@ -172,12 +156,9 @@ public class AddConcertFragment extends Fragment {
                             dialogHour, dialogMinute, true);
                     timePicker.show();
                 }
-            }
-        });
+            });
 
-        buttonAccept.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        buttonAccept.setOnClickListener((View v) ->  {
                 if (editTitle.getText() != null && editClub.getText() != null
                         && editDate.getText() != null && editTime.getText() != null
                         && currentBitmap != null) {
@@ -191,7 +172,7 @@ public class AddConcertFragment extends Fragment {
                     presenter.addConcert(token, uid, currentBand, currentClub, currentDatetime, imageByteArray);
                 }
             }
-        });
+        );
     }
 
     @Override

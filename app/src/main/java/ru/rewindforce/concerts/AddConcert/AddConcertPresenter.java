@@ -28,7 +28,7 @@ public class AddConcertPresenter {
         this.fragment = null;
     }
 
-    public Intent getImageActivityIntent() {
+    public static Intent getImageActivityIntent() {
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
         getIntent.setType("image/*");
 
@@ -40,7 +40,7 @@ public class AddConcertPresenter {
         return chooserIntent;
     }
 
-    public void addConcert(String token, String uid,
+    void addConcert(String token, String uid,
                            String title, String club, long datetime, byte[] imageByteArray) {
         if (fragment != null) {
             File file = new File(fragment.getContext().getCacheDir(), "tempimage.webp");
