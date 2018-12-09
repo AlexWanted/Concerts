@@ -96,12 +96,7 @@ public class HomeScreenFragment extends Fragment implements HomepageActivity.OnT
                 }
             });
         concertsRecycler.setLayoutManager(gridConcertsLayoutManager);
-        concertsAdapter.setOnConcertClickedListener(new ConcertAdapter.OnConcertClicked() {
-            @Override
-            public void onConcertClicked(Concert concert) {
-                activity.openConcertDetailsFragment(concert);
-            }
-        });
+        concertsAdapter.setOnConcertClickedListener((Concert concert) -> activity.openConcertDetailsFragment(concert));
         concertsRecycler.setAdapter(concertsAdapter);
         if(savedInstanceState != null) {
             presenter.setConcertsList((ArrayList<Concert>) savedInstanceState.getSerializable(BUNDLE_LIST));

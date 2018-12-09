@@ -1,5 +1,6 @@
 package ru.rewindforce.concerts;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import ru.rewindforce.concerts.AddConcert.AddConcertFragment;
+import ru.rewindforce.concerts.Authorization.AuthorizationActivity;
 import ru.rewindforce.concerts.HomeScreen.Concert;
 import ru.rewindforce.concerts.ConcertDetails.ConcertDetailsFragment;
 import ru.rewindforce.concerts.HomeScreen.HomeScreenFragment;
@@ -55,10 +57,14 @@ public class HomepageActivity extends AppCompatActivity implements MyConcertsFra
         previousItem = bottomNavigation.getMenu().getItem(1);
         bottomNavigation.getMenu().getItem(0).setChecked(true);
 
+        if (!hasToken() && !hasUid()) bottomNavigation.setVisibility(View.GONE);
+
         if (currentFragmentTag.equals("")) openFragment(OVERVIEW_FRAGMENT, OVERVIEW_INDEX,
                 HomeScreenFragment.newInstance(HomeScreenFragment.ARG_OVERVIEW));
         else hideEverythingExceptCurrent();
+
         //tabReselectedListener = (OnTabReselected) getSupportFragmentManager().findFragmentByTag(currentFragmentTag);
+
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -83,11 +89,9 @@ public class HomepageActivity extends AppCompatActivity implements MyConcertsFra
                 return false;
             }
         });
-        bottomNavigation.setOnNavigationItemReselectedListener(new BottomNavigationView.OnNavigationItemReselectedListener() {
-            @Override
-            public void onNavigationItemReselected(MenuItem menuItem) {
-                if (tabReselectedListener != null) tabReselectedListener.onReselected();
-            }
+
+        bottomNavigation.setOnNavigationItemReselectedListener((MenuItem menuItem) ->  {
+            if (tabReselectedListener != null) tabReselectedListener.onReselected();
         });
         /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -112,14 +116,21 @@ public class HomepageActivity extends AppCompatActivity implements MyConcertsFra
             @Override
             public void onPageScrollStateChanged(int state) { }
         });*/
-        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
-            @Override
-            public void onBackStackChanged() {
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (hasToken() && hasUid()) {
                 if (getSupportFragmentManager().findFragmentByTag("concert_details") != null)
                     bottomNavigation.setVisibility(View.GONE);
                 else bottomNavigation.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private boolean hasToken() {
+        return getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE).contains(AuthorizationActivity.PREF_TOKEN);
+    }
+
+    private boolean hasUid() {
+        return getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE).contains(AuthorizationActivity.PREF_UID);
     }
 
     private void hideEverythingExceptCurrent() {
@@ -193,8 +204,7 @@ public class HomepageActivity extends AppCompatActivity implements MyConcertsFra
     public void onHide() {
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) bottomNavigation.getLayoutParams();
         if (params.getBehavior() != null)
-            ((HideBottomViewOnScrollBehavior)params.getBehavior()).onNestedScroll(
-                    (CoordinatorLayout)findViewById(R.id.coordinator),
+            ((HideBottomViewOnScrollBehavior)params.getBehavior()).onNestedScroll(findViewById(R.id.coordinator),
                     bottomNavigation, bottomNavigation, 0, -1, 0, 0);
     }
 

@@ -34,6 +34,7 @@ public class ConcertDetailsFragment extends Fragment {
     private ConcertDetailsPresenter presenter;
     private ArrayList<Band> bandArrayList;
     private BandAdapter lineUpAdapter;
+    String token, uid;
 
     public ConcertDetailsFragment() { }
 
@@ -52,6 +53,11 @@ public class ConcertDetailsFragment extends Fragment {
             concert = (Concert) getArguments().getSerializable(ARGUMENT_CONCERT);
         }
 
+        token = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
+                .getString(AuthorizationActivity.PREF_TOKEN, "");
+        uid = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
+                .getString(AuthorizationActivity.PREF_UID, "");
+
         presenter = new ConcertDetailsPresenter();
         bandArrayList = new ArrayList<>();
     }
@@ -61,20 +67,15 @@ public class ConcertDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_concert_details, container, false);
 
         fab = view.findViewById(R.id.fab);
-        fab.setPrompt("Пойдёте на концерт?");
-        fab.setButtonsColor(getResources().getColor(R.color.colorAccent));
-        fab.addItem(getResources().getString(R.string.going), getResources().getDrawable(R.drawable.ic_going));
-        fab.addItem(getResources().getString(R.string.maybe), getResources().getDrawable(R.drawable.ic_maybe));
-        fab.addItem(getResources().getString(R.string.not_going), getResources().getDrawable(R.drawable.ic_not_going));
-        fab.setSelectedItem(3);
-        fab.setOnItemClickListener(new FloatingMultiActionLayout.OnItemClickListener() {
-            @Override
-            public void onItemClick(int id) {
+        if(!uid.equals("") && !token.equals("")) {
+            fab.setPrompt("Пойдёте на концерт?");
+            fab.setButtonsColor(getResources().getColor(R.color.colorAccent));
+            fab.addItem(getResources().getString(R.string.going), getResources().getDrawable(R.drawable.ic_going));
+            fab.addItem(getResources().getString(R.string.maybe), getResources().getDrawable(R.drawable.ic_maybe));
+            fab.addItem(getResources().getString(R.string.not_going), getResources().getDrawable(R.drawable.ic_not_going));
+            fab.setSelectedItem(3);
+            fab.setOnItemClickListener((int id) -> {
                 fab.setExpanded(false);
-                String token = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
-                        .getString(AuthorizationActivity.PREF_TOKEN, "");
-                String uid = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
-                        .getString(AuthorizationActivity.PREF_UID, "");
                 switch (id) {
                     case 1:
                         presenter.putToWishlist(id, token, uid, "going", concert.getId());
@@ -86,8 +87,11 @@ public class ConcertDetailsFragment extends Fragment {
                         presenter.putToWishlist(id, token, uid, "not going", concert.getId());
                         break;
                 }
-            }
-        });
+            });
+        } else {
+            fab.setVisibility(View.GONE);
+        }
+
         TextView text_band = view.findViewById(R.id.text_toolbar_band_name);
         text_band.setText(concert.getBand());
         TextView text_club = view.findViewById(R.id.text_info_club_name);
