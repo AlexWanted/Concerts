@@ -37,11 +37,12 @@
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_login"
                     android:drawablePadding="8dp"
-                    android:hint="@string/users_login"
+                    android:hint="@string/users_login_or_email"
                     android:textColor="@color/textActive"
                     android:inputType="text"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:imeOptions="flagNoExtractUi"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -61,7 +62,8 @@
                     android:textColor="@color/textActive"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:imeOptions="flagNoExtractUi"/>
             </com.google.android.material.textfield.TextInputLayout>
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/forgot_password"
@@ -83,7 +85,19 @@
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal"
                 android:gravity="center">
-                <com.google.android.material.button.MaterialButton
+                <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                    android:id="@+id/button_sign_in"
+                    android:layout_width="125dp"
+                    android:layout_height="50dp"
+                    android:text="@string/sign_in"
+                    android:textColor="@color/textActive"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/button_login_shape"
+                    app:spinning_bar_width="3dp"
+                    app:spinning_bar_color="#FFF"
+                    app:spinning_bar_padding="8dp"
+                    app:initialCornerAngle="4dp"/>
+                <!--<com.google.android.material.button.MaterialButton
                     android:id="@+id/button_sign_in"
                     android:layout_width="125dp"
                     android:layout_height="60dp"
@@ -91,7 +105,7 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:cornerRadius="4dp"
                     android:text="@string/sign_in"
-                    android:textColor="@color/textActive"/>
+                    android:textColor="@color/textActive"/>-->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_offline"
                     android:layout_width="125dp"
@@ -124,20 +138,5 @@
             app:autoSizeMinTextSize="10sp"
             app:autoSizeMaxTextSize="15sp"
             app:autoSizeStepGranularity="1sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/loading"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#a0000000">
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="@color/textActive"/>
     </LinearLayout>
 </RelativeLayout>

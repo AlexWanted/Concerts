@@ -109,7 +109,7 @@ public class CircularAnimationUtils {
                     super.onAnimationEnd(animation);
                     isAnimationRunning = false;
                     changeWindowBgColor(window, context.getResources().getColor(R.color.colorPrimaryDarkSignIn));
-                    listener.onDismissed();
+                    if(listener != null) listener.onDismissed();
                 }
 
                 @Override
@@ -123,7 +123,7 @@ public class CircularAnimationUtils {
                 startColorAnimation(view, endColor, startColor, duration);
             }
         } else {
-            listener.onDismissed();
+            if(listener != null) listener.onDismissed();
         }
     }
 

@@ -30,5 +30,4 @@
         <item name="boxStrokeWidth">2dp</item>
         <item name="android:textColorHint">@color/textInactive</item>
     </style>
-
 </resources>

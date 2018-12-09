@@ -23,6 +23,7 @@
     <string name="register">Регистрация</string>
     <string name="offline">Оффлайн</string>
     <string name="users_login">Логин</string>
+    <string name="users_login_or_email">Логин или E-Mail</string>
     <string name="email">E-Mail</string>
     <string name="first_name">Имя</string>
     <string name="last_name">Фамилия</string>

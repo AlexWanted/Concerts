@@ -1,107 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/sign_up_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDarkSignUp"
     android:clickable="true"
     android:focusable="true">
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/login_scroll"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="25dp"
+            android:paddingRight="16dp">
             <TextView
+                style="@style/TextAppearance.AppCompat.Display1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="@string/register"
-                android:textColor="@color/textActive"
-                style="@style/TextAppearance.AppCompat.Display1"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                android:weightSum="2">
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_weight="1"
-                    android:id="@+id/input_first_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    style="@style/LoginTextInputLayoutStyle"
-                    app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
+                android:textColor="@color/textActive" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_first_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_first_last_name"
-                        android:drawablePadding="8dp"
-                        android:hint="@string/first_name"
-                        android:nextFocusDown="@+id/edit_last_name"
-                        android:textColor="@color/textActive"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_weight="1"
-                    android:id="@+id/input_last_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    style="@style/LoginTextInputLayoutStyle"
-                    app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_last_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/last_name"
-                        android:nextFocusDown="@+id/edit_login"
-                        android:textColor="@color/textActive"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:singleLine="true" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                style="@style/LoginTextInputLayoutStyle"
-                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_login"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableStart="@drawable/ic_login"
-                    android:drawablePadding="8dp"
-                    android:nextFocusDown="@+id/edit_email"
-                    android:hint="@string/users_login"
-                    android:textColor="@color/textActive"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:singleLine="true" />
-            </com.google.android.material.textfield.TextInputLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/input_email"
+                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
-                style="@style/LoginTextInputLayoutStyle"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -111,18 +40,43 @@
                     android:drawableStart="@drawable/ic_email"
                     android:drawablePadding="8dp"
                     android:hint="@string/email"
-                    android:nextFocusDown="@+id/edit_password"
-                    android:textColor="@color/textActive"
-                    android:inputType="text"
+                    android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:nextFocusDown="@+id/input_login"
+                    android:singleLine="true"
+                    android:textColor="@color/textActive"
+                    android:imeOptions="flagNoExtractUi"/>
             </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_password"
+                android:id="@+id/input_login"
+                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
+                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_login"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/users_login"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:nextFocusDown="@+id/input_password"
+                    android:singleLine="true"
+                    android:textColor="@color/textActive"
+                    android:imeOptions="flagNoExtractUi"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_password"
                 style="@style/LoginTextInputLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
                 app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -132,37 +86,124 @@
                     android:drawableStart="@drawable/ic_password"
                     android:drawablePadding="8dp"
                     android:hint="@string/password"
-                    android:textColor="@color/textActive"
                     android:inputType="textPassword"
+                    android:nextFocusDown="@+id/edit_first_name"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:textColor="@color/textActive"
+                    android:imeOptions="flagNoExtractUi"/>
             </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.button.MaterialButton
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:fitsSystemWindows="true"
+                        android:id="@+id/profile_avatar"
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+                        android:layout_centerHorizontal="true"/>
+                    <LinearLayout
+                        android:fitsSystemWindows="true"
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+                        android:background="@drawable/circle_foreground"
+                        android:layout_alignTop="@+id/profile_avatar"
+                        android:layout_alignBottom="@+id/profile_avatar"
+                        android:layout_alignEnd="@+id/profile_avatar"
+                        android:layout_alignStart="@+id/profile_avatar"
+                        android:gravity="center"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_image"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Выбрать"
+                            android:maxLines="1"
+                            android:textColor="@android:color/white"
+                            android:textAlignment="center"
+                            android:textSize="14sp"/>
+                    </LinearLayout>
+                </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_first_name"
+                        style="@style/LoginTextInputLayoutStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_first_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_first_last_name"
+                            android:drawablePadding="8dp"
+                            android:hint="@string/first_name"
+                            android:inputType="textPersonName"
+                            android:maxLines="1"
+                            android:nextFocusDown="@+id/edit_last_name"
+                            android:singleLine="true"
+                            android:textColor="@color/textActive"
+                            android:imeOptions="flagNoExtractUi"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_last_name"
+                        style="@style/LoginTextInputLayoutStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_last_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/last_name"
+                            android:drawableStart="@drawable/ic_first_last_name"
+                            android:drawablePadding="8dp"
+                            android:inputType="textPersonName"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/textActive"
+                            android:imeOptions="flagNoExtractUi"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                 android:id="@+id/button_sign_up"
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
-                app:backgroundTint="@android:color/transparent"
-                app:cornerRadius="4dp"
-                app:strokeColor="@color/textActive"
-                app:strokeWidth="1dp"
-                android:text="@string/sign_up"
+                android:background="@drawable/button_sign_up_shape"
                 android:maxLines="1"
-                android:textColor="@color/textActive"/>
+                android:text="@string/sign_up"
+                android:textColor="@color/textActive"
+                app:initialCornerAngle="4dp"
+                app:spinning_bar_color="#FFF"
+                app:spinning_bar_padding="8dp"
+                app:spinning_bar_width="3dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-    <LinearLayout
-        android:id="@+id/loading"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#a0000000">
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content"
-            android:indeterminateTint="@color/textActive"/>
-    </LinearLayout>
-</RelativeLayout>
+    <ImageView
+        android:id="@+id/button_close"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/ic_close" />
+</FrameLayout>

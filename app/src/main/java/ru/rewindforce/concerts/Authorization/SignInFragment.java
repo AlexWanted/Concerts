@@ -2,45 +2,50 @@ package ru.rewindforce.concerts.Authorization;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.util.regex.Pattern;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.Fragment;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import ru.rewindforce.concerts.R;
-import ru.rewindforce.concerts.Authorization.AuthorizationActivity.AuthorizationApi;
-import ru.rewindforce.concerts.Authorization.AuthorizationActivity.AuthorizationResponse;
 
+import ru.rewindforce.concerts.Authorization.AuthorizationContract.OnSignInListener;
 
 public class SignInFragment extends Fragment {
 
     private static final String TAG = SignInFragment.class.getSimpleName();
 
     private TextInputEditText editLogin, editPassword;
-    private static AuthorizationApi loginApi;
-    private OnSignInListener onSignInListener;
+    private TextInputLayout inputLogin, inputPassword;
+    private boolean isLoginValid = false, isPasswordValid = false;
+
+    private AuthorizationContract.OnSignInListener onSignInListener;
     private AppCompatTextView signUp;
-    private LinearLayout loadingView;
-    MaterialButton buttonOffline, signIn;
+    private CircularProgressButton signIn;
+
+    private SignInPresenter presenter;
 
     public SignInFragment() {}
 
-    public static SignInFragment newInstance() {
+    static SignInFragment newInstance() {
         SignInFragment signInFragment = new SignInFragment();
         Bundle args = new Bundle();
         signInFragment.setArguments(args);
@@ -57,12 +62,7 @@ public class SignInFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Retrofit retrofit = new Retrofit.Builder()
-                                        .baseUrl("http://rewindconcerts.000webhostapp.com")
-                                        .addConverterFactory(GsonConverterFactory.create())
-                                        .build();
-        loginApi = retrofit.create(AuthorizationApi.class);
+        presenter = new SignInPresenter();
     }
 
     @Override
@@ -71,77 +71,133 @@ public class SignInFragment extends Fragment {
         editLogin = view.findViewById(R.id.edit_login);
         editPassword = view.findViewById(R.id.edit_password);
         signUp = view.findViewById(R.id.sign_up);
-        buttonOffline = view.findViewById(R.id.button_offline);
-        loadingView = view.findViewById(R.id.loading);
         signIn = view.findViewById(R.id.button_sign_in);
-
+        inputLogin = view.findViewById(R.id.input_login);
+        inputPassword = view.findViewById(R.id.input_password);
+        MaterialButton buttonOffline = view.findViewById(R.id.button_offline);
+        buttonOffline.setOnClickListener((View v) -> {if (onSignInListener != null) onSignInListener.onLogin();});
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             buttonOffline.setStateListAnimator(null);
             signIn.setStateListAnimator(null);
         }
+
+        TextWatcher uppercaseTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Pattern uppercasePattern = Pattern.compile("^(?=.*[A-Z]+)\\S+$");
+                if(uppercasePattern.matcher(s).matches()){
+                    editLogin.setText(s.toString().toLowerCase());
+                    editLogin.setSelection(s.length());
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        };
+        editLogin.addTextChangedListener(uppercaseTextWatcher);
+
+        TextWatcher loginSpecTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Pattern loginPattern = Pattern.compile("^[a-zA-Z0-9._@]+$");
+                if (loginPattern.matcher(s).matches()) {
+                    inputLogin.setErrorEnabled(false);
+                    isLoginValid = true;
+                } else {
+                    isLoginValid = false;
+                    if(s.length() > 0) enableInputError(inputLogin, "Допускаются только латинские буквы (a-z), цифры (0-9), символы . и _");
+                    else inputLogin.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        };
+        editLogin.addTextChangedListener(loginSpecTextWatcher);
+
+        TextWatcher passwordSpecTextWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Pattern passwordPattern = Pattern.compile("^[a-zA-Z0-9/._,:;?!*+%\\-<>@$()#\\[\\]{}\\\\]+$");
+                if (passwordPattern.matcher(s).matches()) {
+                    inputPassword.setErrorEnabled(false);
+                    isPasswordValid = true;
+                } else {
+                    isPasswordValid = false;
+                    if(s.length() > 0) enableInputError(inputPassword, "Допускаются только буквы латинского алфавита (A-z), " +
+                                "арабских цифры (0-9) и следующие специальные символы:\n" +
+                                "( ) . , : ; ? ! * + % - < > @ [ ] { } / \\ _ {} $ #");
+                    else inputPassword.setErrorEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        };
+        editPassword.addTextChangedListener(passwordSpecTextWatcher);
+
         return view;
+    }
+
+    private void enableInputError(TextInputLayout input, CharSequence message) {
+        input.setError(message);
+        input.setErrorEnabled(true);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        signUp.setText(Html.fromHtml(getResources().getString(R.string.sign_up_now)));
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onSignInListener.onSignUp(signUp);
-            }
-        });
+        presenter.attachFragment(this);
 
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
+        signUp.setText(Html.fromHtml(getResources().getString(R.string.sign_up_now)));
+        signUp.setOnClickListener((View v) -> onSignInListener.onSignUp(signUp));
+        signIn.setOnClickListener((View v) -> attemptLogin());
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         onSignInListener = null;
+        if (presenter != null) presenter.detachFragment();
     }
 
     private void attemptLogin() {
         String login = editLogin.getText().toString();
         String password = editPassword.getText().toString();
 
-        if (!TextUtils.isEmpty(login) && !TextUtils.isEmpty(password)) {
-            loadingView.setVisibility(View.VISIBLE);
-            loginApi.login(login, password).enqueue(new Callback<AuthorizationResponse>() {
-                @Override
-                public void onResponse(Call<AuthorizationResponse> call, Response<AuthorizationResponse> response) {
-                    if (response.body() != null ) {
-                        if (response.body().getError() == 200) {
-                            if (onSignInListener != null) {
-                                onSignInListener.onStoreTokenAndUid(response.body().getToken(), response.body().getUid());
-                                onSignInListener.onLogin();
-                            }
-                        } else {
-                            Log.e("ERROR", response.body().getError() + " " + response.body().getErrorMsg());
-                        }
-                    }
-                    loadingView.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onFailure(Call<AuthorizationResponse> call, Throwable t) {
-                    Log.e("ERROR", t.getMessage());
-                    loadingView.setVisibility(View.GONE);
-                }
-            });
+        if (!TextUtils.isEmpty(login) && !TextUtils.isEmpty(password) && isLoginValid && isPasswordValid) {
+            signIn.startAnimation();
+            presenter.signIn(login, password);
         }
     }
 
-    public interface OnSignInListener {
-        void onStoreTokenAndUid(String token, String uid);
-        void onLogin();
-        void onSignUp(View view);
+    void onSignIn(String token, String uid) {
+        if (onSignInListener != null) {
+            int color = getContext().getResources().getColor(R.color.done);
+            Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_done);
+            signIn.doneLoadingAnimation(color, icon);
+            new Handler().postDelayed(() -> {
+                onSignInListener.onStoreTokenAndUid(token, uid);
+                onSignInListener.onLogin();
+            }, 500);
+        }
+    }
+
+    void onError(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        int color = getContext().getResources().getColor(R.color.error);
+        Bitmap icon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_error);
+        signIn.doneLoadingAnimation(color, icon);
+        new Handler().postDelayed(() -> signIn.revertAnimation(), 1000);
     }
 }

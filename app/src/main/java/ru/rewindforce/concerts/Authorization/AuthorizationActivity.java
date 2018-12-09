@@ -6,16 +6,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 
 import java.util.ArrayList;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -26,7 +24,7 @@ import retrofit2.http.Query;
 import ru.rewindforce.concerts.HomepageActivity;
 import ru.rewindforce.concerts.R;
 
-public class AuthorizationActivity extends AppCompatActivity implements SignInFragment.OnSignInListener {
+public class AuthorizationActivity extends AppCompatActivity implements AuthorizationContract.OnSignInListener {
 
     private static final String TAG = AuthorizationActivity.class.getSimpleName();
 
@@ -74,7 +72,6 @@ public class AuthorizationActivity extends AppCompatActivity implements SignInFr
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             Fragment signInFragment = SignUpFragment.newInstance(reveal);
             ft.add(R.id.authorization_container, signInFragment, SIGN_UP_FRAGMENT);
-            //ft.addToBackStack(SIGN_UP_FRAGMENT);
             ft.commit();
         }
     }
@@ -109,39 +106,13 @@ public class AuthorizationActivity extends AppCompatActivity implements SignInFr
     public void onBackPressed() {
         final Fragment fragment = getSupportFragmentManager().findFragmentByTag(SIGN_UP_FRAGMENT);
         if(fragment != null) {
-            ((CircularAnimationUtils.Dismissible) fragment).dismiss(new CircularAnimationUtils.Dismissible.OnDismissedListener() {
-                @Override
-                public void onDismissed() {
+            ((CircularAnimationUtils.Dismissible) fragment).dismiss(() ->
                     getSupportFragmentManager().beginTransaction()
                                                .remove(fragment)
-                                               .commitNowAllowingStateLoss();
-                }
-            });
+                                               .commitNowAllowingStateLoss());
         } else {
             super.onBackPressed();
         }
-    }
-
-    interface AuthorizationApi {
-        @GET("/v1/user")
-        Call<AuthorizationResponse> login(@Query("login") String login, @Query("password") String password);
-
-        @Multipart
-        @POST("/v1/user")
-        Call<AuthorizationResponse> register(@Part("login") RequestBody login, @Part("password") RequestBody password,
-                                             @Part("email") RequestBody email, @Part("user_city") RequestBody city,
-                                             @Part("user_firstname") RequestBody firstName,
-                                             @Part("user_lastname") RequestBody lastName);
-    }
-
-    public class AuthorizationResponse {
-        private String token, uid, error_msg;
-        private int error;
-
-        public int getError() { return error; }
-        public String getErrorMsg() { return error_msg; }
-        public String getToken() { return token; }
-        public String getUid() { return uid; }
     }
 }
 
