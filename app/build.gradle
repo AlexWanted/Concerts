@@ -16,6 +16,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -34,6 +38,8 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation 'joda-time:joda-time:2.10'
     implementation 'io.supercharge:shimmerlayout:2.1.0'
+    implementation 'br.com.simplepass:loading-button-android:1.14.0'
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
