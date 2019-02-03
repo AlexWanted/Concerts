@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -23,16 +24,18 @@ public class AddConcertModel {
 
     public AddConcertModel() {
         Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://rewindconcerts.000webhostapp.com")
+                                .baseUrl("http://192.168.43.225:5000")
+                                //.baseUrl("http://rewindconcerts.000webhostapp.com")
                                 .addConverterFactory(GsonConverterFactory.create())
                                 .build();
         addConcertApi = retrofit.create(AddConcertModel.AddConcertApi.class);
     }
 
-    public void addConcertList(String token, RequestBody uid,
-                               RequestBody title, RequestBody club, RequestBody datetime,
-                               MultipartBody.Part image, final AddConcertCallback callback) {
-        addConcertApi.addConcert(token, uid, title, club, datetime, image)
+    public void addConcertList(String token, String uid, RequestBody title, RequestBody[] line_up,
+                               RequestBody club, RequestBody datetime,
+                               MultipartBody.Part highres, MultipartBody.Part lowres,
+                               final AddConcertCallback callback) {
+        addConcertApi.addConcert(token, uid, title, line_up, club, RequestBody.create(MediaType.parse("text/plain"), ""), datetime, highres, lowres)
                 .enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -59,9 +62,11 @@ public class AddConcertModel {
 
     interface AddConcertApi {
         @Multipart
-        @POST("/v1/concerts")
-        Call<ResponseBody> addConcert(@Header("Authorization") String token, @Part("uid") RequestBody uid,
-                                      @Part("title") RequestBody title, @Part("club") RequestBody club,
-                                      @Part("datetime") RequestBody datetime, @Part MultipartBody.Part image);
+        @POST("/concert")
+        Call<ResponseBody> addConcert(@Header("Authorization") String token, @Header("UID") String uid,
+                                      @Part("title") RequestBody title, @Part("line_up[]") RequestBody[] line_up,
+                                      @Part("club") RequestBody club, @Part("description") RequestBody description,
+                                      @Part("datetime") RequestBody datetime,
+                                      @Part MultipartBody.Part highres, @Part MultipartBody.Part lowres);
     }
 }

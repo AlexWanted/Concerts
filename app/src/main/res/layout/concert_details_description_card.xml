@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="false"
+    app:contentPadding="15dp">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            style="@style/TextAppearance.AppCompat.Title.FiraSans"
+            android:id="@+id/card_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:text="Описание"/>
+
+        <TextView
+            style="@style/TextAppearance.AppCompat.Body1.FiraSans"
+            android:id="@+id/descriptionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/card_title"
+            android:layout_marginTop="8dp"
+            android:text="@string/lorem_ipsum"/>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/childContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
@@ -21,7 +25,7 @@
                 app:titleEnabled="false">
 
                 <ImageView
-                    android:id="@+id/header_bg"
+                    android:id="@+id/toolbarHeader"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:foreground="#66000000"
@@ -30,7 +34,7 @@
                     app:layout_collapseMode="parallax" />
 
                 <TextView
-                    android:id="@+id/text_toolbar_band_name"
+                    android:id="@+id/toolbarTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="#FFFFFF"
@@ -38,13 +42,25 @@
                     android:textStyle="bold"
                     android:layout_gravity="bottom|center_horizontal"
                     android:paddingBottom="55dp"/>
+                <ImageView
+                    android:id="@+id/returnButton"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="start"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_back"
+                    android:background="?selectableItemBackgroundBorderless"/>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/detailsNestedScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="-35dp"
+            android:layout_marginBottom="55dp"
             android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
             <LinearLayout
@@ -55,18 +71,142 @@
                     layout="@layout/concert_details_information_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"/>
+                    android:layout_marginBottom="8dp"/>
+                <include
+                    android:id="@+id/descriptionCard"
+                    layout="@layout/concert_details_description_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"/>
                 <include
                     layout="@layout/concert_details_line_up_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"/>
+                    android:layout_marginBottom="8dp"/>
+                <include
+                    layout="@layout/concert_details_comments_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
-    <ru.rewindforce.concerts.Views.FloatingMultiActionLayout
-        android:id="@+id/fab"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent" />
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <ru.rewindforce.concerts.views.FloatingMultiActionLayout
+            android:id="@+id/fab"
+            android:layout_height="match_parent"
+            android:paddingBottom="50dp"
+            android:layout_width="match_parent"/>
+        <RelativeLayout
+            android:layout_gravity="bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="4dp">
+            <LinearLayout
+                android:id="@+id/commentEditBox"
+                android:visibility="invisible"
+                android:translationY="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:background="@drawable/shadow"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white">
+                    <ImageView
+                        android:id="@+id/commentEditClose"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_margin="5dp"
+                        android:src="@drawable/ic_close"
+                        android:tint="@color/textInactive"
+                        android:layout_gravity="center"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_gravity="center_vertical">
+                        <View
+                            android:layout_width="3dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/colorAccent"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="2dp"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:textSize="14sp"
+                                android:text="Редактирование"
+                                android:textStyle="bold"
+                                android:textColor="#80000000"/>
+                            <TextView
+                                android:id="@+id/commentEditText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:textSize="16sp"
+                                android:textColor="#111"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <View
+                android:id="@+id/commentBoxShadow"
+                android:layout_above="@+id/comment_box"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/shadow"/>
+            <RelativeLayout
+                android:id="@+id/comment_box"
+                android:layout_below="@+id/commentEditBox"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@android:color/white">
+                <EditText
+                    android:id="@+id/commentMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="60dp"
+                    android:maxLines="2"
+                    android:hint="Напишите что-нибудь"
+                    android:background="@android:color/transparent"
+                    android:inputType="text|textMultiLine"/>
+                <LinearLayout
+                    android:id="@+id/buttonSend"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/gradient_purple"
+                    android:gravity="center">
+                    <ProgressBar
+                        android:id="@+id/sendButtonLoading"
+                        android:visibility="gone"
+                        android:theme="@style/AppTheme.WhiteAccent"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp" />
+                    <ImageView
+                        android:id="@+id/sendButtonIcon"
+                        android:tint="@android:color/white"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ic_send"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

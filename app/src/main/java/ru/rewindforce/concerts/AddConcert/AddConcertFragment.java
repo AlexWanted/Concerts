@@ -23,30 +23,31 @@ import com.google.android.material.textfield.TextInputEditText;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import androidx.fragment.app.Fragment;
-import ru.rewindforce.concerts.Authorization.AuthorizationActivity;
+import ru.rewindforce.concerts.authorization.AuthorizationActivity;
+import ru.rewindforce.concerts.BitmapHelper;
 import ru.rewindforce.concerts.R;
 
 public class AddConcertFragment extends Fragment {
 
     private static final String TAG = AddConcertFragment.class.getSimpleName();
 
-    private final static String BUNDLE_BITMAP = "chosen_image_bitmap",
+    private final static String BUNDLE_LOWRES = "chosen_image_lowres_array",
+                                BUNDLE_HIGHRES = "chosen_image_highres_array",
                                 BUNDLE_DATE = "chosen_date";
 
     private static final int GET_IMAGE_RESPONSE = 1;
     private ImageView thumbnail;
     private Bitmap currentBitmap;
     private AddConcertPresenter presenter;
-    private TextInputEditText editTitle, editClub, editDate, editTime;
+    private TextInputEditText editTitle, editClub, editDate, editTime, editLineUp;
     private Button buttonAccept;
     private int year, month, day, hour, minutes;
-    private String currentBand, currentClub;
-    private byte[] imageByteArray;
+    private String currentBand, currentClub, currentLineUp;
+    private byte[] highresByteArray, lowresByteArray;
     public AddConcertFragment() {}
 
     public static AddConcertFragment newInstance() {
@@ -56,7 +57,7 @@ public class AddConcertFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new AddConcertPresenter();
+        presenter = new AddConcertPresenter(getContext());
         year = month = day = hour = minutes = -1;
     }
 
@@ -68,6 +69,7 @@ public class AddConcertFragment extends Fragment {
         editClub = view.findViewById(R.id.edit_club);
         editDate = view.findViewById(R.id.edit_date);
         editTime = view.findViewById(R.id.edit_time);
+        editLineUp = view.findViewById(R.id.edit_line_up);
         buttonAccept = view.findViewById(R.id.accept);
         return view;
     }
@@ -93,9 +95,10 @@ public class AddConcertFragment extends Fragment {
                         .toString(DateTimeFormat.forPattern("HH:mm")));
             }
 
-            imageByteArray = savedInstanceState.getByteArray(BUNDLE_BITMAP);
-            if (imageByteArray != null) {
-                currentBitmap = BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.length);
+            highresByteArray = savedInstanceState.getByteArray(BUNDLE_HIGHRES);
+            lowresByteArray = savedInstanceState.getByteArray(BUNDLE_LOWRES);
+            if (highresByteArray != null) {
+                currentBitmap = BitmapFactory.decodeByteArray(highresByteArray, 0, highresByteArray.length);
                 Glide.with(getContext()).load(currentBitmap).thumbnail(0.1f)
                         .apply(new RequestOptions().circleCrop()).into(thumbnail);
             }
@@ -160,16 +163,19 @@ public class AddConcertFragment extends Fragment {
 
         buttonAccept.setOnClickListener((View v) ->  {
                 if (editTitle.getText() != null && editClub.getText() != null
-                        && editDate.getText() != null && editTime.getText() != null
-                        && currentBitmap != null) {
+                        && editDate.getText() != null && editTime.getText() != null &&
+                        editLineUp.getText() != null && currentBitmap != null) {
                     currentBand = editTitle.getText().toString();
                     currentClub = editClub.getText().toString();
+                    currentLineUp = editLineUp.getText().toString();
+                    String[] lineUp = new String[1];
+                    lineUp[0] = currentLineUp;
                     String token = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
                             .getString(AuthorizationActivity.PREF_TOKEN, "");
                     String uid = getContext().getSharedPreferences(AuthorizationActivity.PREF_NAME, Context.MODE_PRIVATE)
                             .getString(AuthorizationActivity.PREF_UID, "");
                     long currentDatetime = new DateTime(year, month, day, hour, minutes).getMillis();
-                    presenter.addConcert(token, uid, currentBand, currentClub, currentDatetime, imageByteArray);
+                    presenter.addConcert(token, uid, currentBand, lineUp, currentClub, currentDatetime, highresByteArray, lowresByteArray);
                 }
             }
         );
@@ -185,12 +191,21 @@ public class AddConcertFragment extends Fragment {
                     if (getContext() != null) {
                         InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
                         currentBitmap = BitmapFactory.decodeStream(inputStream);
+                        highresByteArray = BitmapHelper.getCompressedBitmapData(currentBitmap, 1000000, 1000);
+                        lowresByteArray = BitmapHelper.getCompressedBitmapData(currentBitmap, 1000000, 500);
+                        //currentBitmap = null;
+
+                        Glide.with(getContext()).load(currentBitmap).thumbnail(0.1f)
+                                .apply(new RequestOptions().circleCrop()).into(thumbnail);
+
+                        /*InputStream inputStream = getContext().getContentResolver().openInputStream(data.getData());
+                        currentBitmap = BitmapFactory.decodeStream(inputStream);
                         ByteArrayOutputStream out = new ByteArrayOutputStream();
                         currentBitmap.compress(Bitmap.CompressFormat.WEBP, 75, out);
                         imageByteArray = out.toByteArray();
 
                         Glide.with(getContext()).load(currentBitmap).thumbnail(0.1f)
-                                .apply(new RequestOptions().circleCrop()).into(thumbnail);
+                                .apply(new RequestOptions().circleCrop()).into(thumbnail);*/
                     }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -208,7 +223,10 @@ public class AddConcertFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (currentBitmap != null) outState.putByteArray(BUNDLE_BITMAP, imageByteArray);
+        if (currentBitmap != null) {
+            outState.putByteArray(BUNDLE_LOWRES, lowresByteArray);
+            outState.putByteArray(BUNDLE_HIGHRES, highresByteArray);
+        }
         outState.putIntArray(BUNDLE_DATE, new int[]{year, month, day, hour, minutes});
     }
 }

@@ -1,21 +1,34 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/fira_sans</item>
     </style>
 
-    <style name="LoginStyle" parent="AppTheme">
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkSignIn</item>
-        <item name="android:windowBackground">@color/colorPrimaryDark</item>
-        <item name="android:background">@color/colorPrimaryDark</item>
+    <style name="AppTheme.WhiteAccent">
+        <item name="colorAccent">@android:color/white</item>
     </style>
 
-    <style name="RegisterStyle" parent="AppTheme">
-        <item name="colorPrimaryDark">@color/colorPrimaryDarkSignUp</item>
-        <item name="android:windowBackground">@color/colorPrimaryDarkSignUp</item>
-        <item name="android:background">@color/colorPrimaryDarkSignUp</item>
+    <style name="TextAppearance.AppCompat.Body1.FiraSans" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Body2.FiraSans" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Title.FiraSans" parent="TextAppearance.AppCompat.Title">
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Subhead.FiraSans" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:fontFamily">@font/fira_sans</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Caption.FiraSans" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:fontFamily">@font/fira_sans</item>
     </style>
 
     <style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
@@ -25,9 +38,19 @@
         <item name="colorControlHighlight">@color/textActive</item>
     </style>
 
+
     <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="boxStrokeColor">@color/textActive</item>
         <item name="boxStrokeWidth">2dp</item>
         <item name="android:textColorHint">@color/textInactive</item>
+    </style>
+
+
+    <style name="BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/bottomSheetStyleWrapper</item>
+    </style>
+
+    <style name="bottomSheetStyleWrapper" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>

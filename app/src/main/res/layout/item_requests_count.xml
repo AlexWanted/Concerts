@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="false"
+    app:contentPadding="15dp"
+    app:cardBackgroundColor="@android:color/white"
+    android:layout_marginBottom="8dp">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/TextAppearance.AppCompat.Subhead.FiraSans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Заявки в друзья"
+            android:textColor="#111"/>
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/requestsCount"
+            style="@style/TextAppearance.AppCompat.Subhead.FiraSans"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:textColor="#111"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

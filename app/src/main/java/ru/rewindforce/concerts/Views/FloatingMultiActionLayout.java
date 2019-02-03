@@ -1,4 +1,4 @@
-package ru.rewindforce.concerts.Views;
+package ru.rewindforce.concerts.views;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

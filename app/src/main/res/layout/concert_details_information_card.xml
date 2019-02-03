@@ -3,15 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:cardBackgroundColor="@android:color/transparent"
+    app:cardCornerRadius="0dp"
     app:cardElevation="2dp"
-    app:cardUseCompatPadding="true"
-    app:contentPadding="15dp">
+    app:cardUseCompatPadding="false">
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_confirmation_background"
+        android:padding="15dp">
         <TextView
-            style="@style/TextAppearance.AppCompat.Title"
+            style="@style/TextAppearance.AppCompat.Title.FiraSans"
             android:id="@+id/card_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,65 +21,158 @@
             android:layout_alignParentStart="true"
             android:text="Информация"/>
 
-        <ImageView
-            android:id="@+id/icon_club"
-            android:src="@drawable/ic_club"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <LinearLayout
+            android:id="@+id/city"
             android:layout_below="@+id/card_title"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="10dp"
-            android:tint="#757575"/>
-        <TextView
-            android:id="@+id/text_info_club_name"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_below="@+id/card_title"
-            android:layout_toEndOf="@+id/icon_club"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="9dp"
-            android:textColor="#757575"
-            android:textSize="18sp"
-            android:text="Stadium"/>
-        <ImageView
-            android:id="@+id/icon_calendar"
-            android:src="@drawable/ic_calendar"
-            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp">
+            <ImageView
+                android:id="@+id/icon_city"
+                android:src="@drawable/ic_location"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="16dp"
+                android:tint="#757575"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead.FiraSans"
+                    android:id="@+id/infoCity"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#111"/>
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1.FiraSans"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#9E9E9E"
+                    android:text="Город"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/club"
+            android:layout_below="@+id/city"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_info_club_name"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="10dp"
-            android:tint="#757575"/>
-        <TextView
-            android:id="@+id/text_info_date"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp">
+            <ImageView
+                android:id="@+id/icon_club"
+                android:src="@drawable/ic_club"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="16dp"
+                android:tint="#757575"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead.FiraSans"
+                    android:id="@+id/infoClubName"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#111"/>
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1.FiraSans"
+                    android:id="@+id/text_info_club"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#9E9E9E"
+                    android:text="Клуб"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/date"
+            android:layout_below="@+id/club"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_below="@+id/text_info_club_name"
-            android:layout_toEndOf="@+id/icon_calendar"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="9dp"
-            android:textColor="#757575"
-            android:textSize="18sp"
-            android:text="29.01.1999"/>
-        <ImageView
-            android:id="@+id/icon_time"
-            android:src="@drawable/ic_time"
-            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp">
+            <ImageView
+                android:id="@+id/icon_calendar"
+                android:src="@drawable/ic_calendar"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="16dp"
+                android:tint="#757575"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead.FiraSans"
+                    android:id="@+id/infoDate"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#111"/>
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1.FiraSans"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#9E9E9E"
+                    android:text="Дата"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/time"
+            android:layout_below="@+id/date"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text_info_date"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="10dp"
-            android:tint="#757575"/>
-        <TextView
-            android:id="@+id/text_info_time"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:layout_below="@+id/text_info_date"
-            android:layout_toEndOf="@+id/icon_time"
-            android:layout_marginTop="14dp"
-            android:layout_marginStart="9dp"
-            android:textColor="#757575"
-            android:textSize="18sp"
-            android:text="20:00"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp">
+            <ImageView
+                android:id="@+id/icon_time"
+                android:src="@drawable/ic_time"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="16dp"
+                android:tint="#757575"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Subhead.FiraSans"
+                    android:id="@+id/infoTime"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#111"/>
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Body1.FiraSans"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="#9E9E9E"
+                    android:text="Начало"/>
+            </LinearLayout>
+        </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
